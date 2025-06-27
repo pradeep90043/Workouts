@@ -1,0 +1,33 @@
+[
+    
+    {
+        "name": "Dumbbell Curl",
+        "reps": [12, 10, 8],
+        "weight": [5, 7.5, 10],
+        "sets": 3,
+        "rest": "60s"
+    },
+    {
+        "name": "Barbell Curl",
+        "reps": [12, 10, 8],
+        "weight": [2.5, 5, 7.5],
+        "sets": 3,
+        "rest": "60s"
+    },
+    {
+        "name": "Hammer Curl",
+        "reps": [12, 10, 8],
+        "weight": [5, 7.5, 10],
+        "sets": 3,
+        "rest": "60s"
+    },
+    
+    {
+        "name": "Concentration Curl",
+        "reps": [12, 10, 8],
+        "weight": [2.5, 5, 7.5],
+        "sets": 3,
+        "rest": "60s"
+    }
+    
+]

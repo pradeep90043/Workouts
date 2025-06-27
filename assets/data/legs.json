@@ -1,0 +1,37 @@
+[
+    {
+        "name":"situps",
+        "reps":[50,50,50],
+        "weight":[0,0,0],
+        "sets":3,
+        "rest":"60s"
+    },
+    {
+        "name":"Goblet squat",
+        "reps":[12,12,12],
+        "weight":[15,15,15],
+        "sets":3,
+        "rest":"60s"
+    },
+    {
+        "name":"Leg extension",
+        "reps":[12,10,8],
+        "weight":[30,40,50],
+        "sets":3,
+        "rest":"60s"
+    },
+    {
+        "name":"Leg curl",
+        "reps":[12,10,8],
+        "weight":[30,40,50],
+        "sets":3,
+        "rest":"60s"
+    },
+    {
+        "name":"Calf raise",
+        "reps":[20,20,20],
+        "weight":[0,0,0],
+        "sets":3,
+        "rest":"60s"
+    }
+]

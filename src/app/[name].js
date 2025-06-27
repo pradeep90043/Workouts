@@ -1,44 +1,56 @@
 import { Stack, useLocalSearchParams } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
-import { ScrollView } from "react-native";
-import exercises from "../../assets/data/exercises.json";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
+import { Link } from "expo-router";
+import MuscleGroup from "../components/MuscleGroup";
+import legs from "../../assets/data/legs.json";
+import bicep from "../../assets/data/bicep.json";
+import triceps from "../../assets/data/triceps.json";
+import chest from "../../assets/data/chest.json";
+import back from "../../assets/data/back.json";
+import shoulders from "../../assets/data/shoulders.json";
 import { useState } from "react";
+import { TouchableOpacity } from "react-native";
+
+const MUSCLE_DATA = {
+  'legs': legs,
+  'bicep': bicep,
+  'triceps': triceps,
+  'chest': chest,
+  'back': back,
+  'shoulders': shoulders
+};
 
 export default function ExerciseDetailsScreen() {
   const params = useLocalSearchParams();
+  const { name } = params;
 
-  const [isInstructioExpanded, setIsInstructionExpanded] = useState(false);
+  // Get muscle data based on the day name (which matches muscle name)
+  const muscleData = MUSCLE_DATA[name.toLowerCase()];
 
-  const exercise = exercises.find((item) => (item.name = params.name));
+  if (!muscleData) {
+    return <Text>Muscle not found</Text>;
+  }
 
-  if (!exercise) {
-    return <Text>Exercise not found</Text>;
+  const [exerciseData, setExerciseData] = useState(muscleData);
+  const onChangeHandler = () => {
+    setIsEdit(!isEdit);
   }
 
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Stack.Screen options={{ title: exercise.name }} />
-        <View style={styles.panel}>
-          <Text style={styles.exerciseName}>{exercise.name} </Text>
-          <Text style={styles.exerciseTitle}>
-            {exercise.muscle} | {exercise.equipment}
-          </Text>
+        <View style={styles.muscleHeader}>
+          <Text style={styles.muscleTitle}>{name}</Text>
+
         </View>
-        <View style={styles.panel}>
-          <Text
-            style={styles.instructions}
-            numberOfLines={isInstructioExpanded ? 0 : 3}
-          >
-            {exercise.instructions}{" "}
-          </Text>
-          <Text
-            onPress={() => setIsInstructionExpanded(!isInstructioExpanded)}
-            style={styles.seeMore}
-          >
-        {   isInstructioExpanded ? "See less": "See more"}
-          </Text>
-        </View>
+
+        <MuscleGroup
+          muscle={name}
+          exercises={exerciseData}
+          setExerciseData={setExerciseData}
+        />
+
+
       </View>
     </ScrollView>
   );
@@ -46,29 +58,25 @@ export default function ExerciseDetailsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    gap: 10,
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#f5f5f5",
   },
-  panel: {
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 5,
+  muscleHeader: {
+    marginBottom: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  exerciseName: {
-    fontSize: 18,
-    fontWeight: 600,
+  muscleTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#4CAF50",
   },
-  exerciseTitle: {
-    color: "dimgray",
-  },
-  instructions: {
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  seeMore: {
-    alignSelf: "center",
-    padding: 10,
-    fontWeight: "600",
-    color: "gray",
+  editButton: {
+    backgroundColor: "#4CAF50",
+    padding: 8,
+    borderRadius: 4,
+    alignItems: "center",
   },
 });

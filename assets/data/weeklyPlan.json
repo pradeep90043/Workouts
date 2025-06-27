@@ -1,0 +1,57 @@
+[
+    {
+      "day": "Monday",
+      "muscles": [
+        {
+          "muscle": "Chest",
+          "exercises": [
+            {
+              "name": "Flat Bench Press",
+              "reps": [12, 10, 8],
+              "weight": [40, 50, 60],
+              "sets": 3,
+              "rest": "60s"
+            },
+            {
+              "name": "Incline Dumbbell Press",
+              "reps": [12, 10, 10],
+              "weight": [20, 22, 24],
+              "sets": 3,
+              "rest": "60s"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "Tuesday",
+      "muscles": [
+        {
+          "muscle": "Back",
+          "exercises": [
+            {
+              "name": "Deadlift",
+              "reps": [6, 4, 2],
+              "weight": [100, 120, 140],
+              "sets": 3,
+              "rest": "90s"
+            }
+          ]
+        },
+        {
+          "muscle": "Biceps",
+          "exercises": [
+            {
+              "name": "Barbell Curl",
+              "reps": [12, 10, 8],
+              "weight": [20, 25, 30],
+              "sets": 3,
+              "rest": "60s"
+            }
+          ]
+        }
+      ]
+    }
+
+  ]
+  

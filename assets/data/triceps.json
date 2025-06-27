@@ -1,0 +1,23 @@
+[
+    {
+        "name": "Overhead Tricep Extension",
+        "reps": [12, 10, 8],
+        "weight": [5, 7.5, 10],
+        "sets": 3,
+        "rest": "60s"
+    },
+    {
+        "name": "Dumbbell Tricep Extension",
+        "reps": [12, 10, 8],
+        "weight": [5, 7.5, 10],
+        "sets": 3,
+        "rest": "60s"
+    },
+    {
+        "name": "Tricep Pushdown",
+        "reps": [12, 10, 8],
+        "weight": [5, 7.5, 10],
+        "sets": 3,
+        "rest": "60s"
+    } 
+]

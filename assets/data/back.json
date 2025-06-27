@@ -1,0 +1,39 @@
+[
+    {
+        "name": "Lat Pulldown",
+        "reps": [12, 10, 8],
+        "weight": [40, 50, 60],
+        "sets": 3,
+        "rest": "60s"
+    },
+    {
+        "name": "cable Row",
+        "reps": [12, 10, 8],
+        "weight": [40, 50, 60],
+        "sets": 3,
+        "rest": "60s"
+    },
+    {
+        "name": "dumble one arm row",
+        "reps": [12, 10, 8],
+        "weight": [12.5, 15, 15],
+        "sets": 3,
+        "rest": "60s"
+    },
+    {
+        "name": "Barbell Row",
+        "reps": [12, 10, 8],
+        "weight": [7.5, 10, 12.5],
+        "sets": 3,
+        "rest": "60s"
+    },
+    {
+        "name": "deadlift",
+        "reps": [12, 10, 8],
+        "weight": [10, 15, 20],
+        "sets": 3,
+        "rest": "60s"
+    }
+   
+  
+]

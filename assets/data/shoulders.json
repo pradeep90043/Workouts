@@ -1,0 +1,33 @@
+[
+    {
+        "name": "Dumbbell Shoulder Press",
+        "reps": [12, 10, 8],
+        "weight": [12.5, 15, 15],
+        "sets": 3,
+        "rest": "60s"
+    },{
+        "name": "Dumbbell Lateral Raise",
+        "reps": [12, 10, 8],
+        "weight": [5, 7.5, 10],
+        "sets": 3,
+        "rest": "60s"
+    },{
+        "name": "Dumbbell Front Raise",
+        "reps": [12, 10, 8],
+        "weight": [5, 7.5, 10],
+        "sets": 3,
+        "rest": "60s"
+    },{
+        "name": "reverse fly",
+        "reps": [12, 10, 8],
+        "weight": [5, 7.5, 10],
+        "sets": 3,
+        "rest": "60s"
+    },{
+        "name": "shrugs",
+        "reps": [12, 10, 8],
+        "weight": [10, 15, 20],
+        "sets": 3,
+        "rest": "60s"
+    }
+]
