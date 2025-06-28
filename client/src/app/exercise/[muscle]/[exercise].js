@@ -1,4 +1,4 @@
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import MuscleHistory from '../../../components/MuscleHistory';
@@ -10,89 +10,123 @@ import { useWorkouts } from '@context/WorkoutContext';
 export default function ExerciseDetailsScreen() {
   const [isEdit, setIsEdit] = useState(false);
   const params = useLocalSearchParams();
-  const { workouts } = useWorkouts();
-  const exercise = workouts[0].muscleGroups?.find((group) => group.name === params.muscle)?.exercises?.find((exercise) => exercise.name === params.exercise);
+  const { workouts, refreshWorkouts } = useWorkouts();
+  const exercise = workouts[0]?.muscleGroups
+    ?.find((group) => group.name === params.muscle)
+    ?.exercises
+    ?.find((ex) => ex.name === params.exercise);
   console.log({exercise})
   const [exerciseData, setExerciseData] = useState(() => {
+    // Use the exercise data from context if available, otherwise use defaults
+    const currentExercise = workouts[0]?.muscleGroups
+      ?.find((group) => group.name === params.muscle)
+      ?.exercises?.find((ex) => ex.name === params.exercise);
+
+    if (currentExercise) {
+      const firstSet = currentExercise.stats[0]?.sets[0] || {};
+      return {
+        name: params.exercise,
+        reps: currentExercise.stats[0]?.sets?.map(set => set.reps) || [8],
+        weight: currentExercise.stats[0]?.sets?.map(set => set.weight) || [20],
+        sets: currentExercise.stats[0]?.sets?.length || 3,
+        rest: firstSet.rest || 60,
+      };
+    }
+    
+    // Default values if no exercise data is found
     return {
       name: params.exercise,
-      reps: [0, 0, 0],
-      weight: [0, 0, 0],
+      reps: [8, 8, 8],
+      weight: [20, 20, 20],
       sets: 3,
-      rest: 0,
+      rest: 60,
       history: []
     };
   });
 
   const handleInputChange = (field, setIndex, value) => {
-    const newExercise = { ...exerciseData };
-    if (field === 'sets') {
-      newExercise[field] = parseInt(value);
-      // Update reps and weight arrays to match new sets count
-      if (parseInt(value) > newExercise.reps.length) {
-        while (newExercise.reps.length < parseInt(value)) {
-          newExercise.reps.push(0);
-          newExercise.weight.push(0);
+    setExerciseData(prev => {
+      const newData = { ...prev };
+      
+      if (field === 'reps' || field === 'weight') {
+        // For reps and weight, we need to update the specific set
+        newData[field] = [...prev[field]];
+        newData[field][setIndex] = Number(value) || 0;
+      } else if (field === 'sets') {
+        // When changing number of sets, adjust the arrays accordingly
+        const newSets = Math.max(1, Math.min(10, Number(value) || 1)); // Limit between 1-10 sets
+        const currentSets = prev.sets;
+        
+        if (newSets > currentSets) {
+          // Add new sets with default values
+          const repsToAdd = newSets - currentSets;
+          const lastRep = prev.reps.length > 0 ? prev.reps[prev.reps.length - 1] : 8;
+          const lastWeight = prev.weight.length > 0 ? prev.weight[prev.weight.length - 1] : 20;
+          
+          newData.reps = [...prev.reps, ...Array(repsToAdd).fill(lastRep)];
+          newData.weight = [...prev.weight, ...Array(repsToAdd).fill(lastWeight)];
+        } else if (newSets < currentSets) {
+          // Remove extra sets
+          newData.reps = prev.reps.slice(0, newSets);
+          newData.weight = prev.weight.slice(0, newSets);
         }
-      } else if (parseInt(value) < newExercise.reps.length) {
-        newExercise.reps = newExercise.reps.slice(0, parseInt(value));
-        newExercise.weight = newExercise.weight.slice(0, parseInt(value));
+        
+        newData.sets = newSets;
+      } else if (field === 'rest') {
+        // For rest time, ensure it's a positive number
+        newData[field] = Math.max(0, Number(value) || 0);
       }
-    } else {
-      const currentValues = newExercise[field];
-      const updatedValues = [...currentValues];
-      updatedValues[setIndex] = parseInt(value);
-      newExercise[field] = updatedValues;
-    }
-    setExerciseData(newExercise);
+      
+      return newData;
+    });
   };
 
 
   const addExercise = async () => {
     try {
-      const newExercise = { ...exerciseData, note: "" };
-      delete newExercise.history;
-      delete newExercise.name;
-      const formattedExerciseName = params.exercise.toLowerCase().replaceAll(" ", "");
-      const url = `http://localhost:3002/api/workouts/${params.muscle}/exercises/${formattedExerciseName}/stats`;
+      // Format the data according to the server's expected format
+      const workoutData = {
+        exercises: [{
+          name: params.exercise,
+          muscleGroup: params.muscle,
+          sets: exerciseData.reps.map((reps, index) => ({
+            reps: Number(reps) || 0,
+            weight: Number(exerciseData.weight[index]) || 0,
+            rest: Number(exerciseData.rest) || 60
+          })),
+          notes: ""
+        }]
+      };
 
-      console.log('Sending request to:', url);
-      console.log('Request body:', JSON.stringify(newExercise, null, 2));
+      console.log('Sending workout data:', JSON.stringify(workoutData, null, 2));
 
-      const response = await fetch(url, {
+      const response = await fetch('http://localhost:3003/api/workouts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newExercise),
+        body: JSON.stringify(workoutData),
       });
 
-      const responseText = await response.text();
-      let responseData;
-
-      try {
-        responseData = responseText ? JSON.parse(responseText) : {};
-      } catch (e) {
-        console.error('Failed to parse response as JSON:', responseText);
-        throw new Error(`Server responded with non-JSON data: ${responseText.substring(0, 100)}...`);
-      }
-
       if (!response.ok) {
-        console.error('Server error details:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: responseData
-        });
-        const errorMessage = responseData.error || responseData.message || 'Unknown server error';
-        const errorDetails = responseData.details ? ` Details: ${responseData.details}` : '';
-        throw new Error(`Server error (${response.status}): ${errorMessage}${errorDetails}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to save workout');
       }
 
-      console.log('Response data:', responseData);
-      return responseData;
+      const result = await response.json();
+      console.log('Workout saved successfully:', result);
+      
+      // Show success message
+      Alert.alert('Success', 'Workout saved successfully!');
+      
+      // Exit edit mode
+      setIsEdit(false);
+      
+      // Refresh the workout data
+      await refreshWorkouts();
     } catch (error) {
-      console.error('Error in addExercise:', error);
-      throw error; // Re-throw to allow error boundary to catch it
+      console.error('Error saving workout:', error);
+      Alert.alert('Error', error.message || 'Failed to save workout');
     }
   };
 
@@ -109,16 +143,16 @@ export default function ExerciseDetailsScreen() {
   const renderEditForm = () => (
     <View style={styles.container}>
       <View style={styles.exerciseBlock}>
-        <Text style={styles.exerciseName}>{exercise.name}</Text>
+        <Text style={styles.exerciseName}>{exerciseData.name}</Text>
 
         <View style={styles.setsContainer}>
-          {exercise.stats[0].sets?.map((set, setIndex) => (
+          {Array.from({ length: exerciseData.sets }).map((_, setIndex) => (
             <View key={setIndex} style={styles.setContainer}>
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Set {setIndex + 1} Reps:</Text>
                 <TextInput
                   style={styles.input}
-                  value={set.reps.toString()}
+                  value={exerciseData.reps[setIndex]?.toString() || ''}
                   onChangeText={(value) => handleInputChange('reps', setIndex, value)}
                   keyboardType="numeric"
                   placeholder="Reps"
@@ -128,7 +162,7 @@ export default function ExerciseDetailsScreen() {
                 <Text style={styles.label}>Set {setIndex + 1} Weight (kg):</Text>
                 <TextInput
                   style={styles.input}
-                  value={set.weight.toString()}
+                  value={exerciseData.weight[setIndex]?.toString() || ''}
                   onChangeText={(value) => handleInputChange('weight', setIndex, value)}
                   keyboardType="numeric"
                   placeholder="Weight"
@@ -142,7 +176,7 @@ export default function ExerciseDetailsScreen() {
           <Text style={styles.label}>Total Sets:</Text>
           <TextInput
             style={styles.input}
-            value={exercise.stats[0].sets?.length.toString()}
+            value={exerciseData.sets.toString()}
             onChangeText={(value) => handleInputChange('sets', null, value)}
             keyboardType="numeric"
             placeholder="Enter sets"
@@ -153,7 +187,7 @@ export default function ExerciseDetailsScreen() {
           <Text style={styles.label}>Rest (s):</Text>
           <TextInput
             style={styles.input}
-            value={exercise.stats[0].sets?.map((set) => set.rest).reduce((a, b) => a + b, 0).toString()}
+            value={exerciseData.rest.toString()}
             onChangeText={(value) => handleInputChange('rest', null, value)}
             keyboardType="numeric"
             placeholder="Enter rest time"
@@ -166,11 +200,11 @@ export default function ExerciseDetailsScreen() {
   const renderViewMode = () => (
     <View style={styles.container}>
       <View style={styles.exerciseBlock}>
-           <Text style={styles.exerciseName}>{exercise.name}</Text>
-                    <Text style={styles.label}>Reps: {exercise.stats[0].sets?.map((set) => set.reps).join(", ") || 'N/A'}</Text>
-                    <Text style={styles.label}>Weight: {exercise.stats[0].sets?.map((set) => set.weight).join(", ") || 'N/A'}</Text>
-                    <Text style={styles.label}>Sets: {exercise.stats[0].sets?.length}</Text>
-                    <Text style={styles.label}>Rest: {exercise.stats[0].sets?.map((set) => set.rest).join(", ") || 'N/A'}</Text>
+        <Text style={styles.exerciseName}>{exerciseData.name}</Text>
+        <Text style={styles.label}>Reps: {exerciseData.reps.join(', ')}</Text>
+        <Text style={styles.label}>Weight: {exerciseData.weight.join(', ')}</Text>
+        <Text style={styles.label}>Sets: {exerciseData.sets}</Text>
+        <Text style={styles.label}>Rest: {exerciseData.rest}</Text>
       </View>
     </View>
   );

@@ -118,11 +118,12 @@ router.get('/workouts/summary', async (req, res) => {
  *     duration: number (in seconds, optional)
  *   }],
  *   notes: string (optional)
- * }
  */
+// Add a new workout with simplified data structure
 router.post('/workouts', async (req, res) => {
     try {
-        const { date = new Date(), exercises, notes } = req.body;
+        const { exercises } = req.body;
+        const currentDate = new Date();
 
         // Validate required fields
         if (!exercises || !Array.isArray(exercises) || exercises.length === 0) {
@@ -134,61 +135,56 @@ router.post('/workouts', async (req, res) => {
 
         // Validate each exercise
         for (const [index, ex] of exercises.entries()) {
-            if (!ex.name || !ex.muscleGroup || !ex.sets || !Array.isArray(ex.sets) || ex.sets.length === 0) {
+            if (!ex.name || !ex.muscleGroup || !Array.isArray(ex.reps) || ex.reps.length === 0) {
                 return res.status(400).json({
                     status: 'error',
-                    message: `Exercise at index ${index} is missing required fields (name, muscleGroup, or sets)`
+                    message: `Exercise at index ${index} is missing required fields (name, muscleGroup, or reps)`
                 });
-            }
-
-            for (const [setIndex, set] of ex.sets.entries()) {
-                if (typeof set.reps === 'undefined' || typeof set.weight === 'undefined') {
-                    return res.status(400).json({
-                        status: 'error',
-                        message: `Set ${setIndex + 1} in exercise "${ex.name}" is missing reps or weight`
-                    });
-                }
             }
         }
 
-        // Create workout data
+        // Create workout data with server-generated date
         const workoutData = {
             userId: DEFAULT_USER_ID,
-            date: new Date(date),
+            date: currentDate,
             exercises: exercises.map(ex => ({
                 name: ex.name,
                 muscleGroup: ex.muscleGroup.toLowerCase(),
                 stats: [{
-                    date: new Date(date),
-                    sets: ex.sets.map((set, index) => ({
+                    date: currentDate,
+                    sets: ex.reps.map((reps, index) => ({
                         setNumber: index + 1,
-                        reps: set.reps,
-                        weight: set.weight,
-                        rest: set.rest || 60,
-                        completed: set.completed !== false // default to true if not specified
+                        reps: reps,
+                        weight: ex.weight && ex.weight[index] ? ex.weight[index] : 0,
+                        rest: ex.rest || 60,
+                        completed: true,
+                        notes: ''
                     })),
                     notes: ex.notes || '',
-                    rating: ex.rating,
-                    duration: ex.duration
+                    rating: ex.rating || 0,
+                    duration: ex.duration || 0
                 }]
             })),
-            notes: notes || '',
+            notes: `Workout on ${currentDate.toLocaleDateString()}`,
             completed: true
         };
 
+        // Create and save the workout
         const workout = new Workout(workoutData);
         await workout.save();
 
         res.status(201).json({
             status: 'success',
+            message: 'Workout added successfully',
             data: workout
         });
     } catch (error) {
-        console.error('Error creating workout:', error);
-        res.status(400).json({
+        console.error('Error adding workout:', error);
+        res.status(500).json({ 
             status: 'error',
-            message: 'Failed to create workout',
-            error: process.env.NODE_ENV === 'development' ? error.message : {}
+            message: 'Error adding workout', 
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 });
