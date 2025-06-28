@@ -8,8 +8,7 @@ import { TextInput } from 'react-native-paper';
 
 export default function ExerciseDetailsScreen() {
   const [isEdit, setIsEdit] = useState(false);
-  const params = useLocalSearchParams();  
-  console.log({params})
+  const params = useLocalSearchParams();
   const [exerciseData, setExerciseData] = useState(() => {
     return {
       name: params.exercise,
@@ -17,7 +16,7 @@ export default function ExerciseDetailsScreen() {
       weight: [0, 0, 0],
       sets: 3,
       rest: 0,
-      history: [] 
+      history: []
     };
   });
 
@@ -44,30 +43,116 @@ export default function ExerciseDetailsScreen() {
     setExerciseData(newExercise);
   };
 
+  const getExerciseStats = async () => {
+    try {
+      const formattedExerciseName = params.exercise.toLowerCase().replaceAll(" ", "");
+      const url = `http://localhost:3002/api/workouts/${params.muscle}/exercises/${formattedExerciseName}/stats`;
+
+      console.log('Sending request to:', url);
+      console.log('Request body:', JSON.stringify(newExercise, null, 2));
+
+      const response = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const responseText = await response.text();
+      let responseData;
+
+      try {
+        responseData = responseText ? JSON.parse(responseText) : {};
+      } catch (e) {
+        console.error('Failed to parse response as JSON:', responseText);
+        throw new Error(`Server responded with non-JSON data: ${responseText.substring(0, 100)}...`);
+      }
+
+      if (!response.ok) {
+        console.error('Server error details:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: responseData
+        });
+        const errorMessage = responseData.error || responseData.message || 'Unknown server error';
+        const errorDetails = responseData.details ? ` Details: ${responseData.details}` : '';
+        throw new Error(`Server error (${response.status}): ${errorMessage}${errorDetails}`);
+      }
+
+      console.log('Response data:', responseData);
+      return responseData;
+    } catch (error) {
+      console.error('Error in addExercise:', error);
+      throw error; // Re-throw to allow error boundary to catch it
+    }
+  };
+
+  useEffect(() => {
+    getExerciseStats();
+  }, []);
+
   const addExercise = async () => {
-    const newExercise = { ...exerciseData };
-    const response = await fetch(`http://localhost:3002/api/workouts/${exerciseData.muscle}/exercises/${exerciseData.name}/stats`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newExercise),
-    });
-    const data = await response.json();
-    console.log(data);
-    
+    try {
+      const newExercise = { ...exerciseData, note: "" };
+      delete newExercise.history;
+      delete newExercise.name;
+      const formattedExerciseName = params.exercise.toLowerCase().replaceAll(" ", "");
+      const url = `http://localhost:3002/api/workouts/${params.muscle}/exercises/${formattedExerciseName}/stats`;
+
+      console.log('Sending request to:', url);
+      console.log('Request body:', JSON.stringify(newExercise, null, 2));
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newExercise),
+      });
+
+      const responseText = await response.text();
+      let responseData;
+
+      try {
+        responseData = responseText ? JSON.parse(responseText) : {};
+      } catch (e) {
+        console.error('Failed to parse response as JSON:', responseText);
+        throw new Error(`Server responded with non-JSON data: ${responseText.substring(0, 100)}...`);
+      }
+
+      if (!response.ok) {
+        console.error('Server error details:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: responseData
+        });
+        const errorMessage = responseData.error || responseData.message || 'Unknown server error';
+        const errorDetails = responseData.details ? ` Details: ${responseData.details}` : '';
+        throw new Error(`Server error (${response.status}): ${errorMessage}${errorDetails}`);
+      }
+
+      console.log('Response data:', responseData);
+      return responseData;
+    } catch (error) {
+      console.error('Error in addExercise:', error);
+      throw error; // Re-throw to allow error boundary to catch it
+    }
   };
 
   const onChangeHandler = () => {
-
-    setIsEdit(!isEdit);
+    console.log({ isEdit });
+    if (isEdit) {
+      setIsEdit(false);
+      addExercise();
+    } else {
+      setIsEdit(true);
+    }
   };
 
   const renderEditForm = () => (
     <View style={styles.container}>
       <View style={styles.exerciseBlock}>
         <Text style={styles.exerciseName}>{exerciseData.name}</Text>
-        
+
         <View style={styles.setsContainer}>
           {exerciseData.reps.map((rep, setIndex) => (
             <View key={setIndex} style={styles.setContainer}>
