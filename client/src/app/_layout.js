@@ -13,7 +13,7 @@ export default function RootLayout() {
       <Stack.Screen 
         name="exercise/[muscle]/[exercise]" 
         options={({ route }) => ({
-          title: `${route.params?.muscle} - ${route.params?.exercise}`
+          title: `${route.params?.muscle.replace(/%20/g, ' ') || ''} - ${route.params?.exercise.replace(/%20/g, ' ') || ''}`
         })}
       />
     </Stack>

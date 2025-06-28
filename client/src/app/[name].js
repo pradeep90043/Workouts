@@ -32,18 +32,10 @@ export default function ExerciseDetailsScreen() {
   }
 
   const [exerciseData, setExerciseData] = useState(muscleData);
-  const onChangeHandler = () => {
-    setIsEdit(!isEdit);
-  }
 
   return (
     <ScrollView>
       <View style={styles.container}>
-        <View style={styles.muscleHeader}>
-          <Text style={styles.muscleTitle}>{name}</Text>
-
-        </View>
-
         <MuscleGroup
           muscle={name}
           exercises={exerciseData}
@@ -61,22 +53,5 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#f5f5f5",
-  },
-  muscleHeader: {
-    marginBottom: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  muscleTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#4CAF50",
-  },
-  editButton: {
-    backgroundColor: "#4CAF50",
-    padding: 8,
-    borderRadius: 4,
-    alignItems: "center",
   },
 });
