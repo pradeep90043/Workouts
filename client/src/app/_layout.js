@@ -11,9 +11,9 @@ export default function RootLayout() {
         })}
       />
       <Stack.Screen 
-        name="exercise/[exercise]" 
+        name="exercise/[muscle]/[exercise]" 
         options={({ route }) => ({
-          title: 'Exercise Details'
+          title: `${route.params?.muscle} - ${route.params?.exercise}`
         })}
       />
     </Stack>

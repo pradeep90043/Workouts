@@ -1,7 +1,7 @@
 import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import MuscleHistory from '../../components/MuscleHistory';
+import MuscleHistory from '../../../components/MuscleHistory';
 import { TextInput } from 'react-native-paper';
 
 

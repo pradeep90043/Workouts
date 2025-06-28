@@ -5,10 +5,11 @@ import { useLocalSearchParams } from "expo-router";
 
 const MuscleGroup = ({ exercises }) => {
 const params = useLocalSearchParams();
+console.log({params})
   const defaultJSx = () => (
     <View style={styles.container}>
       {exercises.map((exercise , index) => (
-        <Link href={{ pathname:`/exercise/${exercise.name}`,query:{muscle:params.name}}} asChild key={index} >
+        <Link href={{ pathname:`/exercise/${params.name}/${exercise.name}`,query:{muscle:params.name}}} asChild key={index} >
           <TouchableOpacity style={styles.exerciseBlock}>
             <Text style={styles.exerciseName}>{exercise.name}</Text>
             <Text style={styles.label}>Reps: {exercise.reps.join(", ") || 'N/A'}</Text>
