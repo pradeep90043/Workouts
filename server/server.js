@@ -21,7 +21,7 @@ const endOfDay = (date) => {
 const app = express();
 
 // Log environment
-console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('NODE_ENV:', process.env.NODE_ENV, process.env.NODE_ENV !== 'production' ? '(development)' : '(production)');
 console.log('Current working directory:', process.cwd());
 
 // Simple test route at the beginning
@@ -161,24 +161,14 @@ connectDB().then(() => {
     process.exit(1);
 });
 
-// Middleware
-app.use(cors({
-    origin: 'http://localhost:3003',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
 // Request logging middleware
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
     next();
 });
 
-// Configure CORS
-const isDevelopment = process.env.NODE_ENV === 'development';
-
-// Allow all origins in development, with specific ones in production
+// CORS configuration
+const isDevelopment = process.env.NODE_ENV !== 'production';
 const corsOptions = {
     origin: isDevelopment 
         ? function (origin, callback) {
@@ -186,21 +176,31 @@ const corsOptions = {
             callback(null, true);
         } 
         : [
+            'http://localhost:3000',  // React web
             'http://localhost:3001',  // Expo web
             'http://localhost:3002',  // Local server
             'http://localhost:19006', // Expo webpack dev server
-            // Add your production domains here
+            'http://localhost:19002'  // Expo dev tools
         ],
-    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
     exposedHeaders: ['Content-Length'],
+    credentials: true,
     maxAge: 86400, // 24 hours
     preflightContinue: false,
-    optionsSuccessStatus: 204
+    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
+// Enable CORS with the configured options
 app.use(cors(corsOptions));
+
+// Log CORS configuration
+console.log('CORS configuration:', JSON.stringify({
+    origin: isDevelopment ? 'All origins allowed (development mode)' : corsOptions.origin,
+    methods: corsOptions.methods,
+    allowedHeaders: corsOptions.allowedHeaders,
+    credentials: corsOptions.credentials
+}, null, 2));
 
 // Log CORS info
 app.use((req, res, next) => {
@@ -256,7 +256,8 @@ app.use((req, res, next) => {
             'GET    /api/health',
             'GET    /api/workouts',
             'POST   /api/workouts/:muscle/exercises/:exercise/stats',
-            'GET    /api/workouts/:muscle/exercises/:exercise/stats/:date'
+            'GET    /api/workouts/:muscle/exercises/:exercise/stats/:date',
+            'GET    /api/workouts/:muscle/exercises/:exercise/stats'
         ]
     });
 });
@@ -419,6 +420,46 @@ app.get('/api/workouts/:muscle', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to fetch workouts' });
+    }
+});
+
+// Get all stats for a specific exercise
+app.get('/api/workouts/:muscle/exercises/:exercise/stats', async (req, res) => {
+    try {
+        const muscle = req.params.muscle.toLowerCase();
+        const exercise = req.params.exercise.toLowerCase();
+        
+        console.log(`Fetching all stats for ${exercise} in ${muscle} muscle group`);
+        
+        const stats = await Workout.find({
+            'muscle': muscle,
+            'exercises.name': exercise
+        }).sort({ date: -1 });
+        
+        if (!stats || stats.length === 0) {
+            console.log(`No stats found for ${exercise} in ${muscle}`);
+            return res.status(404).json({
+                status: 'not_found',
+                message: `No stats found for ${exercise} in ${muscle} muscle group`
+            });
+        }
+        
+        console.log(`Found ${stats.length} workout records`);
+        res.json({
+            status: 'success',
+            data: stats.map(workout => ({
+                date: workout.date,
+                exercise: workout.exercises.find(e => e.name === exercise)
+            }))
+        });
+        
+    } catch (error) {
+        console.error('Error fetching exercise stats:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to fetch exercise stats',
+            error: error.message
+        });
     }
 });
 

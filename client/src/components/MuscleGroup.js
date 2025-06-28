@@ -5,17 +5,17 @@ import { useLocalSearchParams } from "expo-router";
 
 const MuscleGroup = ({ exercises }) => {
 const params = useLocalSearchParams();
-console.log({params})
+console.log({params, exercises})
   const defaultJSx = () => (
     <View style={styles.container}>
-      {exercises.map((exercise , index) => (
+      {exercises?.map((exercise , index) => (
         <Link href={{ pathname:`/exercise/${params.name}/${exercise.name}`,query:{muscle:params.name}}} asChild key={index} >
           <TouchableOpacity style={styles.exerciseBlock}>
             <Text style={styles.exerciseName}>{exercise.name}</Text>
-            <Text style={styles.label}>Reps: {exercise.reps.join(", ") || 'N/A'}</Text>
-            <Text style={styles.label}>Weight: {exercise.weight.join(", ") || 'N/A'}</Text>
-            <Text style={styles.label}>Sets: {exercise.sets}</Text>
-            <Text style={styles.label}>Rest: {exercise.rest}</Text>
+            <Text style={styles.label}>Reps: {exercise.stats[0].sets?.map((set) => set.reps).join(", ") || 'N/A'}</Text>
+            <Text style={styles.label}>Weight: {exercise.stats[0].sets?.map((set) => set.weight).join(", ") || 'N/A'}</Text>
+            <Text style={styles.label}>Sets: {exercise.stats[0].sets?.length}</Text>
+            <Text style={styles.label}>Rest: {exercise.stats[0].sets?.map((set) => set.rest).join(", ") || 'N/A'}</Text>
           </TouchableOpacity>
         </Link>
       ))}

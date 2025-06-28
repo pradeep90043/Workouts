@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View, Pressable, ActivityIndicator } from 'react-native';
+import { useWorkouts } from '@context/WorkoutContext';
 import { TouchableOpacity } from "react-native";
 
 const MUSCLE_GROUPS = [
@@ -12,6 +13,26 @@ const MUSCLE_GROUPS = [
 ];
 
 export default function App() {
+  const { workouts, loading, error, refreshWorkouts } = useWorkouts();
+  
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+  
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.error}>Error loading workouts: {error}</Text>
+        <Pressable onPress={refreshWorkouts} style={styles.retryButton}>
+          <Text style={styles.retryText}>Retry</Text>
+        </Pressable>
+      </View>
+    );
+  };
   return (
     <View style={styles.container}>
       <FlatList

@@ -1,14 +1,18 @@
 import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { Link, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MuscleHistory from '../../../components/MuscleHistory';
 import { TextInput } from 'react-native-paper';
+import { useWorkouts } from '@context/WorkoutContext';
 
 
 
 export default function ExerciseDetailsScreen() {
   const [isEdit, setIsEdit] = useState(false);
   const params = useLocalSearchParams();
+  const { workouts } = useWorkouts();
+  const exercise = workouts[0].muscleGroups?.find((group) => group.name === params.muscle)?.exercises?.find((exercise) => exercise.name === params.exercise);
+  console.log({exercise})
   const [exerciseData, setExerciseData] = useState(() => {
     return {
       name: params.exercise,
@@ -43,52 +47,6 @@ export default function ExerciseDetailsScreen() {
     setExerciseData(newExercise);
   };
 
-  const getExerciseStats = async () => {
-    try {
-      const formattedExerciseName = params.exercise.toLowerCase().replaceAll(" ", "");
-      const url = `http://localhost:3002/api/workouts/${params.muscle}/exercises/${formattedExerciseName}/stats`;
-
-      console.log('Sending request to:', url);
-      console.log('Request body:', JSON.stringify(newExercise, null, 2));
-
-      const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const responseText = await response.text();
-      let responseData;
-
-      try {
-        responseData = responseText ? JSON.parse(responseText) : {};
-      } catch (e) {
-        console.error('Failed to parse response as JSON:', responseText);
-        throw new Error(`Server responded with non-JSON data: ${responseText.substring(0, 100)}...`);
-      }
-
-      if (!response.ok) {
-        console.error('Server error details:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: responseData
-        });
-        const errorMessage = responseData.error || responseData.message || 'Unknown server error';
-        const errorDetails = responseData.details ? ` Details: ${responseData.details}` : '';
-        throw new Error(`Server error (${response.status}): ${errorMessage}${errorDetails}`);
-      }
-
-      console.log('Response data:', responseData);
-      return responseData;
-    } catch (error) {
-      console.error('Error in addExercise:', error);
-      throw error; // Re-throw to allow error boundary to catch it
-    }
-  };
-
-  useEffect(() => {
-    getExerciseStats();
-  }, []);
 
   const addExercise = async () => {
     try {
@@ -151,16 +109,16 @@ export default function ExerciseDetailsScreen() {
   const renderEditForm = () => (
     <View style={styles.container}>
       <View style={styles.exerciseBlock}>
-        <Text style={styles.exerciseName}>{exerciseData.name}</Text>
+        <Text style={styles.exerciseName}>{exercise.name}</Text>
 
         <View style={styles.setsContainer}>
-          {exerciseData.reps.map((rep, setIndex) => (
+          {exercise.stats[0].sets?.map((set, setIndex) => (
             <View key={setIndex} style={styles.setContainer}>
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Set {setIndex + 1} Reps:</Text>
                 <TextInput
                   style={styles.input}
-                  value={rep.toString()}
+                  value={set.reps.toString()}
                   onChangeText={(value) => handleInputChange('reps', setIndex, value)}
                   keyboardType="numeric"
                   placeholder="Reps"
@@ -170,7 +128,7 @@ export default function ExerciseDetailsScreen() {
                 <Text style={styles.label}>Set {setIndex + 1} Weight (kg):</Text>
                 <TextInput
                   style={styles.input}
-                  value={exerciseData.weight[setIndex].toString()}
+                  value={set.weight.toString()}
                   onChangeText={(value) => handleInputChange('weight', setIndex, value)}
                   keyboardType="numeric"
                   placeholder="Weight"
@@ -184,7 +142,7 @@ export default function ExerciseDetailsScreen() {
           <Text style={styles.label}>Total Sets:</Text>
           <TextInput
             style={styles.input}
-            value={exerciseData.sets.toString()}
+            value={exercise.stats[0].sets?.length.toString()}
             onChangeText={(value) => handleInputChange('sets', null, value)}
             keyboardType="numeric"
             placeholder="Enter sets"
@@ -195,7 +153,7 @@ export default function ExerciseDetailsScreen() {
           <Text style={styles.label}>Rest (s):</Text>
           <TextInput
             style={styles.input}
-            value={exerciseData.rest.toString()}
+            value={exercise.stats[0].sets?.map((set) => set.rest).reduce((a, b) => a + b, 0).toString()}
             onChangeText={(value) => handleInputChange('rest', null, value)}
             keyboardType="numeric"
             placeholder="Enter rest time"
@@ -208,11 +166,11 @@ export default function ExerciseDetailsScreen() {
   const renderViewMode = () => (
     <View style={styles.container}>
       <View style={styles.exerciseBlock}>
-        <Text style={styles.exerciseName}>{exerciseData.name}</Text>
-        <Text style={styles.label}>Repsf: {exerciseData.reps.join(', ')}</Text>
-        <Text style={styles.label}>Weight: {exerciseData.weight.join(', ')}</Text>
-        <Text style={styles.label}>Sets: {exerciseData.sets}</Text>
-        <Text style={styles.label}>Rest: {exerciseData.rest}</Text>
+           <Text style={styles.exerciseName}>{exercise.name}</Text>
+                    <Text style={styles.label}>Reps: {exercise.stats[0].sets?.map((set) => set.reps).join(", ") || 'N/A'}</Text>
+                    <Text style={styles.label}>Weight: {exercise.stats[0].sets?.map((set) => set.weight).join(", ") || 'N/A'}</Text>
+                    <Text style={styles.label}>Sets: {exercise.stats[0].sets?.length}</Text>
+                    <Text style={styles.label}>Rest: {exercise.stats[0].sets?.map((set) => set.rest).join(", ") || 'N/A'}</Text>
       </View>
     </View>
   );
@@ -232,8 +190,8 @@ export default function ExerciseDetailsScreen() {
         {isEdit ? renderEditForm() : renderViewMode()}
 
         <MuscleHistory
-          exercises={[exerciseData]}
-          history={exerciseData.history}
+          exercises={[exercise]}
+          history={exercise.history}
         />
       </View>
     </ScrollView>
