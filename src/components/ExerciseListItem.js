@@ -3,7 +3,8 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 const ExerciseListItem = ({ item }) => {
   return (
-    <Link href={`./${item.name}`} asChild>
+    <Link href={{pathname: '/[name]',
+      params: { name: item.name }}}  asChild>
       <Pressable style={styles.exerciseContainer}>
         <Text style={styles.exerciseDay}>{item.name}</Text>
         <Text style={styles.exerciseInfo}>

@@ -7,7 +7,7 @@ const MuscleGroup = ({ exercises }) => {
   const defaultJSx = () => (
     <View style={styles.container}>
       {exercises.map((exercise , index) => (
-        <Link href={`/exercise/${exercise.name}`} asChild key={index}>
+        <Link href={`/exercise/${exercise.name}`} asChild key={index} params={{ exercise: JSON.stringify(exercise) }}>
           <TouchableOpacity style={styles.exerciseBlock}>
             <Text style={styles.exerciseName}>{exercise.name}</Text>
             <Text style={styles.label}>Reps: {exercise.reps.join(", ") || 'N/A'}</Text>

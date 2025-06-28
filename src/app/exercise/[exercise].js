@@ -4,16 +4,21 @@ import { useState } from 'react';
 import MuscleHistory from '../../components/MuscleHistory';
 import { TextInput } from 'react-native-paper';
 
+
+
 export default function ExerciseDetailsScreen() {
-  const { exercise } = useLocalSearchParams();
   const [isEdit, setIsEdit] = useState(false);
-  const [exerciseData, setExerciseData] = useState({
-    name: exercise,
-    reps: [0, 0, 0],
-    weight: [0, 0, 0],
-    sets: 3,
-    rest: 0,
-    history: []
+  const [exerciseData, setExerciseData] = useState(() => {
+    const params = useLocalSearchParams();  
+    console.log({params})
+    return {
+      name: params.exercise,
+      reps: [0, 0, 0],
+      weight: [0, 0, 0],
+      sets: 3,
+      rest: 0,
+      history: [] 
+    };
   });
 
   const handleInputChange = (field, setIndex, value) => {
@@ -112,14 +117,17 @@ export default function ExerciseDetailsScreen() {
     <ScrollView>
       <View style={styles.screenContainer}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton}>
-            <Link href={`../${exercise}`}>
+          {/* <TouchableOpacity style={styles.backButton}>
+            <Link href={`../${params.name}`}>
               <Text style={styles.backText}>← Back</Text>
             </Link>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.editButton} onPress={() => setIsEdit(!isEdit)}>
             <Text style={styles.editText}>{isEdit ? 'Save' : 'Edit'}</Text>
           </TouchableOpacity>
+          {isEdit && <TouchableOpacity style={styles.editButton} onPress={() => setIsEdit(false)}>
+            <Text style={styles.editText}>Cancel</Text>
+          </TouchableOpacity>}
         </View>
 
         {isEdit ? renderEditForm() : renderViewMode()}

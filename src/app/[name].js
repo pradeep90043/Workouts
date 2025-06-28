@@ -11,7 +11,7 @@ import shoulders from "../../assets/data/shoulders.json";
 import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 
-const MUSCLE_DATA = {
+export const MUSCLE_DATA = {
   'legs': legs,
   'bicep': bicep,
   'triceps': triceps,
