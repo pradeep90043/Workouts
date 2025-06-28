@@ -8,9 +8,9 @@ import { TextInput } from 'react-native-paper';
 
 export default function ExerciseDetailsScreen() {
   const [isEdit, setIsEdit] = useState(false);
+  const params = useLocalSearchParams();  
+  console.log({params})
   const [exerciseData, setExerciseData] = useState(() => {
-    const params = useLocalSearchParams();  
-    console.log({params})
     return {
       name: params.exercise,
       reps: [0, 0, 0],
@@ -42,6 +42,25 @@ export default function ExerciseDetailsScreen() {
       newExercise[field] = updatedValues;
     }
     setExerciseData(newExercise);
+  };
+
+  const addExercise = async () => {
+    const newExercise = { ...exerciseData };
+    const response = await fetch(`http://localhost:3002/api/workouts/${exerciseData.muscle}/exercises/${exerciseData.name}/stats`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newExercise),
+    });
+    const data = await response.json();
+    console.log(data);
+    
+  };
+
+  const onChangeHandler = () => {
+
+    setIsEdit(!isEdit);
   };
 
   const renderEditForm = () => (
@@ -105,7 +124,7 @@ export default function ExerciseDetailsScreen() {
     <View style={styles.container}>
       <View style={styles.exerciseBlock}>
         <Text style={styles.exerciseName}>{exerciseData.name}</Text>
-        <Text style={styles.label}>Reps: {exerciseData.reps.join(', ')}</Text>
+        <Text style={styles.label}>Repsf: {exerciseData.reps.join(', ')}</Text>
         <Text style={styles.label}>Weight: {exerciseData.weight.join(', ')}</Text>
         <Text style={styles.label}>Sets: {exerciseData.sets}</Text>
         <Text style={styles.label}>Rest: {exerciseData.rest}</Text>
@@ -117,12 +136,7 @@ export default function ExerciseDetailsScreen() {
     <ScrollView>
       <View style={styles.screenContainer}>
         <View style={styles.header}>
-          {/* <TouchableOpacity style={styles.backButton}>
-            <Link href={`../${params.name}`}>
-              <Text style={styles.backText}>← Back</Text>
-            </Link>
-          </TouchableOpacity> */}
-          <TouchableOpacity style={styles.editButton} onPress={() => setIsEdit(!isEdit)}>
+          <TouchableOpacity style={styles.editButton} onPress={onChangeHandler}>
             <Text style={styles.editText}>{isEdit ? 'Save' : 'Edit'}</Text>
           </TouchableOpacity>
           {isEdit && <TouchableOpacity style={styles.editButton} onPress={() => setIsEdit(false)}>

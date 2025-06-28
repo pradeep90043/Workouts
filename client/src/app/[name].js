@@ -2,12 +2,12 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { Link } from "expo-router";
 import MuscleGroup from "../components/MuscleGroup";
-import legs from "../../assets/data/legs.json";
-import bicep from "../../assets/data/bicep.json";
-import triceps from "../../assets/data/triceps.json";
-import chest from "../../assets/data/chest.json";
-import back from "../../assets/data/back.json";
-import shoulders from "../../assets/data/shoulders.json";
+import legs from "@assets/data/legs.json";
+import bicep from "@assets/data/bicep.json";
+import triceps from "@assets/data/triceps.json";
+import chest from "@assets/data/chest.json";
+import back from "@assets/data/back.json";
+import shoulders from "@assets/data/shoulders.json";
 import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 
