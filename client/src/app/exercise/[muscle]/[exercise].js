@@ -225,7 +225,6 @@ export default function ExerciseDetailsScreen() {
 
         <MuscleHistory
           exercises={[exercise]}
-          history={exercise.history}
         />
       </View>
     </ScrollView>

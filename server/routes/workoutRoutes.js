@@ -11,7 +11,7 @@ const DEFAULT_USER_ID = 'demo-user';
  * @query startDate - Start date for filtering (ISO format)
  * @query endDate - End date for filtering (ISO format)
  */
-router.get('/workouts/summary', async (req, res) => {
+router.get('/summary', async (req, res) => {
     try {
         const { startDate = '1970-01-01', endDate = new Date().toISOString() } = req.query;
         
@@ -120,7 +120,7 @@ router.get('/workouts/summary', async (req, res) => {
  *   notes: string (optional)
  */
 // Add a new workout with simplified data structure
-router.post('/workouts', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const { exercises } = req.body;
         const currentDate = new Date();
@@ -135,11 +135,21 @@ router.post('/workouts', async (req, res) => {
 
         // Validate each exercise
         for (const [index, ex] of exercises.entries()) {
-            if (!ex.name || !ex.muscleGroup || !Array.isArray(ex.reps) || ex.reps.length === 0) {
+            if (!ex.name || !ex.muscleGroup || !Array.isArray(ex.sets) || ex.sets.length === 0) {
                 return res.status(400).json({
                     status: 'error',
-                    message: `Exercise at index ${index} is missing required fields (name, muscleGroup, or reps)`
+                    message: `Exercise at index ${index} is missing required fields (name, muscleGroup, or sets)`
                 });
+            }
+            
+            // Validate each set in the exercise
+            for (const [setIndex, set] of ex.sets.entries()) {
+                if (set.reps === undefined) {
+                    return res.status(400).json({
+                        status: 'error',
+                        message: `Set ${setIndex + 1} in exercise '${ex.name}' is missing required 'reps' field`
+                    });
+                }
             }
         }
 
@@ -152,16 +162,16 @@ router.post('/workouts', async (req, res) => {
                 muscleGroup: ex.muscleGroup.toLowerCase(),
                 stats: [{
                     date: currentDate,
-                    sets: ex.reps.map((reps, index) => ({
+                    sets: ex.sets.map((set, index) => ({
                         setNumber: index + 1,
-                        reps: reps,
-                        weight: ex.weight && ex.weight[index] ? ex.weight[index] : 0,
-                        rest: ex.rest || 60,
+                        reps: set.reps,
+                        weight: set.weight || 0,
+                        rest: set.rest || 60,
                         completed: true,
                         notes: ''
                     })),
                     notes: ex.notes || '',
-                    rating: ex.rating || 0,
+                    rating: ex.rating || 1,  // Default to 1 (minimum allowed)
                     duration: ex.duration || 0
                 }]
             })),
