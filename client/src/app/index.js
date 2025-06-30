@@ -8,8 +8,11 @@ const MUSCLE_GROUPS = [
   { name: "Biceps", icon: "💪" },
   { name: "Triceps", icon: "💪" },
   { name: "Chest", icon: "🫁" },
-  { name: "Back", icon: "💪" },
-  { name: "Shoulders", icon: "💪" }
+  { name: "Back", icon: "🧗" },
+  { name: "Shoulders", icon: "🙆‍♂️" },
+  // { name: "Core", icon: "🪨" },
+  // { name: "Cardio", icon: "🏃" },
+  // { name: "Full Body", icon: "👤" }
 ];
 
 export default function App() {
