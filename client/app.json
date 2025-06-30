@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Workouts",
-    "slug": "workouts",
+    "slug": "workouts-client",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,7 +16,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourname.workouts"
+      "bundleIdentifier": "com.yourname.workouts",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -41,7 +44,11 @@
       "url": "https://u.expo.dev/7b38db54-16a8-43b1-8e27-2d77dfef2ee3",
       "fallbackToCacheTimeout": 0
     },
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "scheme": "workouts",
     "jsEngine": "hermes"
   }
