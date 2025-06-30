@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Link, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+// Using addWorkout from WorkoutContext
 import MuscleHistory from '../../../components/MuscleHistory';
 import { TextInput } from 'react-native-paper';
 import { useWorkouts } from '@context/WorkoutContext';
@@ -10,7 +11,7 @@ import { useWorkouts } from '@context/WorkoutContext';
 export default function ExerciseDetailsScreen() {
   const [isEdit, setIsEdit] = useState(false);
   const params = useLocalSearchParams();
-  const { workouts, refreshWorkouts } = useWorkouts();
+  const { workouts, refreshWorkouts, addWorkout } = useWorkouts();
   const exercise = workouts[0]?.muscleGroups
     ?.find((group) => group.name === params.muscle)
     ?.exercises
@@ -100,22 +101,8 @@ export default function ExerciseDetailsScreen() {
 
       console.log('Sending workout data:', JSON.stringify(workoutData, null, 2));
 
-      const response = await fetch('http://localhost:3003/api/workouts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(workoutData),
-      });
+      const result = await addWorkout(workoutData);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to save workout');
-      }
-
-      const result = await response.json();
-      console.log('Workout saved successfully:', result);
-      
       // Show success message
       Alert.alert('Success', 'Workout saved successfully!');
       
@@ -123,7 +110,7 @@ export default function ExerciseDetailsScreen() {
       setIsEdit(false);
       
       // Refresh the workout data
-      await refreshWorkouts();
+      // refreshWorkouts already called inside addWorkout
     } catch (error) {
       console.error('Error saving workout:', error);
       Alert.alert('Error', error.message || 'Failed to save workout');

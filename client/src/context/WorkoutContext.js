@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { API_BASE_URL } from '../constants';
 
 const WorkoutContext = createContext();
 
@@ -10,7 +11,7 @@ export const WorkoutProvider = ({ children }) => {
   const fetchWorkouts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3003/api/workouts/summary');
+      const response = await fetch(`${API_BASE_URL}/api/workouts/summary`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -27,7 +28,7 @@ export const WorkoutProvider = ({ children }) => {
 
   const addWorkout = async (workoutData) => {
     try {
-      const response = await fetch('http://localhost:3003/api/workouts', {
+      const response = await fetch(`${API_BASE_URL}/api/workouts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

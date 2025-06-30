@@ -44,7 +44,7 @@ app.use((req, res) => {
 
 // MongoDB connection
 const connectDB = async () => {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/workouts';
+    const mongoURI = process.env.MONGODB_URI || process.env.MONGODB_LOCAL_URI || 'mongodb://127.0.0.1:27017/workouts';
     console.log(`Connecting to MongoDB at: ${mongoURI}`);
     
     try {
@@ -66,7 +66,7 @@ const connectDB = async () => {
 const startServer = async () => {
     try {
         await connectDB();
-        const PORT = process.env.PORT || 3003;
+        const PORT = process.env.PORT || 8080;
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
             console.log(`API available at http://localhost:${PORT}`);

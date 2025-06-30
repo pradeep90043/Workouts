@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "Workouts",
+    "slug": "workouts",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourname.workouts"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.yourname.workouts"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "apiUrl": "http://localhost:8080",
+      "eas": {
+        "projectId": "7b38db54-16a8-43b1-8e27-2d77dfef2ee3"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7b38db54-16a8-43b1-8e27-2d77dfef2ee3",
+      "fallbackToCacheTimeout": 0
+    },
+    "platforms": ["ios", "android", "web"],
+    "scheme": "workouts",
+    "jsEngine": "hermes"
+  }
+}
