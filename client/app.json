@@ -29,7 +29,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "http://localhost:8080",
+      "apiUrl": "https://workouts-server-sm89.onrender.com",
       "eas": {
         "projectId": "7b38db54-16a8-43b1-8e27-2d77dfef2ee3"
       }

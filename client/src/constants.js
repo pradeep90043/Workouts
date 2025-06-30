@@ -1,4 +1,7 @@
 // Centralized constants for the client application
+
+// Production API URL
+// export const API_BASE_URL = 'https://workouts-server-sm89.onrender.com';
 // Update the PORT here if the Express backend changes
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';

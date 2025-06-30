@@ -5,7 +5,7 @@ import { TouchableOpacity } from "react-native";
 
 const MUSCLE_GROUPS = [
   { name: "Legs", icon: "🦵" },
-  { name: "Bicep", icon: "💪" },
+  { name: "Biceps", icon: "💪" },
   { name: "Triceps", icon: "💪" },
   { name: "Chest", icon: "🫁" },
   { name: "Back", icon: "💪" },
