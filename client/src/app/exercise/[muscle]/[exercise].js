@@ -52,7 +52,11 @@ export default function ExerciseDetailsScreen() {
       if (field === 'reps' || field === 'weight') {
         // For reps and weight, we need to update the specific set
         newData[field] = [...prev[field]];
-        newData[field][setIndex] = Number(value) || 0;
+        // Allow decimal numbers for weight, but not for reps
+        const numericValue = field === 'weight' 
+          ? parseFloat(value) || 0 
+          : Math.floor(Number(value)) || 0;
+        newData[field][setIndex] = numericValue;
       } else if (field === 'sets') {
         // When changing number of sets, adjust the arrays accordingly
         const newSets = Math.max(1, Math.min(10, Number(value) || 1)); // Limit between 1-10 sets
@@ -140,8 +144,13 @@ export default function ExerciseDetailsScreen() {
                 <TextInput
                   style={styles.input}
                   value={exerciseData.reps[setIndex]?.toString() || ''}
-                  onChangeText={(value) => handleInputChange('reps', setIndex, value)}
-                  keyboardType="numeric"
+                  onChangeText={(value) => {
+                    // Allow only whole numbers for reps
+                    if (/^\d*$/.test(value) || value === '') {
+                      handleInputChange('reps', setIndex, value);
+                    }
+                  }}
+                  keyboardType="number-pad"
                   placeholder="Reps"
                 />
               </View>
@@ -150,8 +159,13 @@ export default function ExerciseDetailsScreen() {
                 <TextInput
                   style={styles.input}
                   value={exerciseData.weight[setIndex]?.toString() || ''}
-                  onChangeText={(value) => handleInputChange('weight', setIndex, value)}
-                  keyboardType="numeric"
+                  onChangeText={(value) => {
+                    // Allow only numbers and decimal point
+                    if (/^\d*\.?\d*$/.test(value) || value === '') {
+                      handleInputChange('weight', setIndex, value);
+                    }
+                  }}
+                  keyboardType="decimal-pad"
                   placeholder="Weight"
                 />
               </View>

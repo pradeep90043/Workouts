@@ -1,0 +1,35 @@
+@baseUrl = http://localhost:8080
+
+### Get Workouts Summary
+GET {{baseUrl}}/api/workouts/summary
+
+### Get All Workouts
+GET {{baseUrl}}/api/workouts
+
+### Add New Workout
+POST {{baseUrl}}/api/workouts
+Content-Type: application/json
+
+{
+  "exercise": "squat",
+  "sets": 3,
+  "reps": 10,
+  "weight": 60,
+  "date": "2025-07-01"
+}
+
+### Get Workout by ID
+GET {{baseUrl}}/api/workouts/1
+
+### Update Workout
+PUT {{baseUrl}}/api/workouts/1
+Content-Type: application/json
+
+{
+  "sets": 4,
+  "reps": 12,
+  "weight": 65
+}
+
+### Delete Workout
+DELETE {{baseUrl}}/api/workouts/1
