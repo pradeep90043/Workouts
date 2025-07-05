@@ -11,7 +11,7 @@ import { useWorkouts } from '@context/WorkoutContext';
 export default function ExerciseDetailsScreen() {
   const [isEdit, setIsEdit] = useState(false);
   const params = useLocalSearchParams();
-  const { workouts, refreshWorkouts, addWorkout } = useWorkouts();
+  const { workouts, refreshWorkouts, updateWorkout } = useWorkouts();
   const exercise = workouts[0]?.muscleGroups
     ?.find((group) => group.name === params.muscle)
     ?.exercises
@@ -87,25 +87,24 @@ export default function ExerciseDetailsScreen() {
   };
 
 
-  const addExercise = async () => {
+  const updateExercise = async () => {
     try {
       // Format the data according to the server's expected format
-      const workoutData = {
-        exercises: [{
-          name: params.exercise,
-          muscleGroup: params.muscle,
-          sets: exerciseData.reps.map((reps, index) => ({
-            reps: Number(reps) || 0,
-            weight: Number(exerciseData.weight[index]) || 0,
-            rest: Number(exerciseData.rest) || 60
-          })),
-          notes: ""
-        }]
+      const exerciseDataToSend = {
+        id: exercise.id,
+        name: params.exercise,
+        muscleGroup: params.muscle,
+        sets: exerciseData.reps.map((reps, index) => ({
+          reps: Number(reps) || 0,
+          weight: Number(exerciseData.weight[index]) || 0,
+          rest: Number(exerciseData.rest) || 60
+        })),
+        notes: ""
       };
 
-      console.log('Sending workout data:', JSON.stringify(workoutData, null, 2));
+      console.log('Sending workout data:', JSON.stringify(exerciseDataToSend, null, 2));
 
-      const result = await addWorkout(workoutData);
+      const result = await updateWorkout(exerciseDataToSend);
 
       // Show success message
       Alert.alert('Success', 'Workout saved successfully!');
@@ -125,7 +124,7 @@ export default function ExerciseDetailsScreen() {
     console.log({ isEdit });
     if (isEdit) {
       setIsEdit(false);
-      addExercise();
+      updateExercise();
     } else {
       setIsEdit(true);
     }

@@ -49,6 +49,29 @@ export const WorkoutProvider = ({ children }) => {
     }
   };
 
+  const updateWorkout = async (workoutData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/workouts/${workoutData.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(workoutData),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      // Refresh the workouts list
+      await fetchWorkouts();
+      return await response.json();
+    } catch (err) {
+      console.error('Error updating workout:', err);
+      throw err;
+    }
+  };
+
   // Initial fetch
   useEffect(() => {
     fetchWorkouts();
@@ -62,6 +85,7 @@ export const WorkoutProvider = ({ children }) => {
         error,
         refreshWorkouts: fetchWorkouts,
         addWorkout,
+        updateWorkout,
       }}
     >
       {children}
