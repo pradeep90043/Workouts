@@ -8,7 +8,7 @@ export const renderViewMode = ({exercise}) => {
     return(
     <View style={styles.container}>
         <View style={styles.exerciseBlock}>
-            <Text style={styles.exerciseName}>{exercise.name}</Text>
+            <Text style={styles.exerciseName}>{exercise?.name}</Text>
            {sets?.length>0 && (<Text style={styles.label}>Reps: {arrayJoin(sets?.map((set) => set.reps)) || 'N/A'}</Text>)}
            {sets?.length>0 && (<Text style={styles.label}>Weight: {arrayJoin(sets?.map((set) => set.weight)) || 'N/A'}</Text>)}
            {sets?.length>0 && (<Text style={styles.label}>Sets: {sets?.length || 'N/A'}</Text>)}

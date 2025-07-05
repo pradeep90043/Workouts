@@ -51,11 +51,14 @@ export default function ExerciseDetailsScreen() {
       if (field === 'reps' || field === 'weight') {
         // For reps and weight, we need to update the specific set
         newData[field] = [...prev[field]];
-        // Allow decimal numbers for weight, but not for reps
-        const numericValue = field === 'weight'
-          ? parseFloat(value) || 0
-          : Math.floor(Number(value)) || 0;
-        newData[field][setIndex] = numericValue;
+        if (field === 'weight') {
+          // For weight, keep as string to allow decimal input
+          newData[field][setIndex] = value === '' ? '0' : value;
+        } else {
+          // For reps, only allow whole numbers
+          const numericValue = Math.floor(Number(value)) || 0;
+          newData[field][setIndex] = numericValue;
+        }
       } else if (field === 'sets') {
         // When changing number of sets, adjust the arrays accordingly
         const newSets = Math.max(1, Math.min(10, Number(value) || 1)); // Limit between 1-10 sets
@@ -159,9 +162,9 @@ export default function ExerciseDetailsScreen() {
                 <Text style={styles.label}>Set {setIndex + 1} Weight (kg):</Text>
                 <TextInput
                   style={styles.input}
-                  value={exerciseData.weight[setIndex]?.toString() || ''}
+                  value={exerciseData.weight[setIndex]?.toString()}
                   onChangeText={(value) => {
-                    // Allow only numbers and decimal point
+                    // Allow numbers and a single decimal point
                     if (/^\d*\.?\d*$/.test(value) || value === '') {
                       handleInputChange('weight', setIndex, value);
                     }
