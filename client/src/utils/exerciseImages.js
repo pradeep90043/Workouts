@@ -37,6 +37,12 @@ import hammerCurl from "../../assets/images/exercises/arms/hammer.jpeg"
 import overHead from "../../assets/images/exercises/arms/overhead.webp"
 import pushdown from "../../assets/images/exercises/arms/pushdown-bar.jpg"
 import pushdownCurl from "../../assets/images/exercises/arms/pushdown-curl.jpg"
+import running from "../../assets/images/exercises/cardio-core/running.jpg"
+import plank from "../../assets/images/exercises/cardio-core/plank.png"
+import skipping from "../../assets/images/exercises/cardio-core/rope-skipping.jpg"
+import russianTwist from "../../assets/images/exercises/cardio-core/russian-twist.jpg"
+import cycling from "../../assets/images/exercises/cardio-core/cycling.jpg"
+
 
 // Map of exercise names to their images
 const exerciseImages = {
@@ -67,6 +73,11 @@ const exerciseImages = {
   overhead_tricep_extension: overHead,
   tricep_pushdown: pushdown,
   pushdown_curl: pushdownCurl,
+  running: running,
+  plank: plank,
+  skipping: skipping,
+  russian_twists: russianTwist,
+  cycling: cycling,
 }
 // Local images for exercises we have, CDN for others
 /**

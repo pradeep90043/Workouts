@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import MuscleHistory from '../../../components/MuscleHistory';
 import { TextInput } from 'react-native-paper';
 import { useWorkouts } from '@context/WorkoutContext';
+import { renderViewMode } from '../../../components/ViewDetails';
 
 
 
@@ -12,28 +13,26 @@ export default function ExerciseDetailsScreen() {
   const [isEdit, setIsEdit] = useState(false);
   const params = useLocalSearchParams();
   const { workouts, refreshWorkouts, updateWorkout } = useWorkouts();
-  const exercise = workouts[0]?.muscleGroups
+  const exercise = workouts
     ?.find((group) => group.name === params.muscle)
     ?.exercises
     ?.find((ex) => ex.name === params.exercise);
-  console.log({exercise})
+  console.log({ exercise })
   const [exerciseData, setExerciseData] = useState(() => {
     // Use the exercise data from context if available, otherwise use defaults
-    const currentExercise = workouts[0]?.muscleGroups
-      ?.find((group) => group.name === params.muscle)
-      ?.exercises?.find((ex) => ex.name === params.exercise);
-
-    if (currentExercise) {
-      const firstSet = currentExercise.stats[0]?.sets[0] || {};
+    
+    if (exercise) {
+      const firstSet = exercise.stats[0]?.sets[0] || {};
       return {
         name: params.exercise,
-        reps: currentExercise.stats[0]?.sets?.map(set => set.reps) || [8],
-        weight: currentExercise.stats[0]?.sets?.map(set => set.weight) || [20],
-        sets: currentExercise.stats[0]?.sets?.length || 3,
+        reps: exercise.stats[0]?.sets?.map(set => set.reps) || [8],
+        weight: exercise.stats[0]?.sets?.map(set => set.weight) || [20],
+        sets: exercise.stats[0]?.sets?.length || 3,
         rest: firstSet.rest || 60,
+        duration: exercise.stats[0]?.duration,
       };
     }
-    
+
     // Default values if no exercise data is found
     return {
       name: params.exercise,
@@ -48,26 +47,26 @@ export default function ExerciseDetailsScreen() {
   const handleInputChange = (field, setIndex, value) => {
     setExerciseData(prev => {
       const newData = { ...prev };
-      
+
       if (field === 'reps' || field === 'weight') {
         // For reps and weight, we need to update the specific set
         newData[field] = [...prev[field]];
         // Allow decimal numbers for weight, but not for reps
-        const numericValue = field === 'weight' 
-          ? parseFloat(value) || 0 
+        const numericValue = field === 'weight'
+          ? parseFloat(value) || 0
           : Math.floor(Number(value)) || 0;
         newData[field][setIndex] = numericValue;
       } else if (field === 'sets') {
         // When changing number of sets, adjust the arrays accordingly
         const newSets = Math.max(1, Math.min(10, Number(value) || 1)); // Limit between 1-10 sets
         const currentSets = prev.sets;
-        
+
         if (newSets > currentSets) {
           // Add new sets with default values
           const repsToAdd = newSets - currentSets;
           const lastRep = prev.reps.length > 0 ? prev.reps[prev.reps.length - 1] : 8;
           const lastWeight = prev.weight.length > 0 ? prev.weight[prev.weight.length - 1] : 20;
-          
+
           newData.reps = [...prev.reps, ...Array(repsToAdd).fill(lastRep)];
           newData.weight = [...prev.weight, ...Array(repsToAdd).fill(lastWeight)];
         } else if (newSets < currentSets) {
@@ -75,13 +74,16 @@ export default function ExerciseDetailsScreen() {
           newData.reps = prev.reps.slice(0, newSets);
           newData.weight = prev.weight.slice(0, newSets);
         }
-        
+
         newData.sets = newSets;
       } else if (field === 'rest') {
         // For rest time, ensure it's a positive number
         newData[field] = Math.max(0, Number(value) || 0);
+      } else if (field === 'duration') {
+        // For duration, ensure it's a positive number
+        newData[field] = Math.max(0, Number(value) || 0);
       }
-      
+
       return newData;
     });
   };
@@ -108,10 +110,10 @@ export default function ExerciseDetailsScreen() {
 
       // Show success message
       Alert.alert('Success', 'Workout saved successfully!');
-      
+
       // Exit edit mode
       setIsEdit(false);
-      
+
       // Refresh the workout data
       // refreshWorkouts already called inside addWorkout
     } catch (error) {
@@ -136,7 +138,7 @@ export default function ExerciseDetailsScreen() {
         <Text style={styles.exerciseName}>{exerciseData.name}</Text>
 
         <View style={styles.setsContainer}>
-          {Array.from({ length: exerciseData.sets }).map((_, setIndex) => (
+          {exercise?.muscleGroup !== "cardio" ? Array.from({ length: exerciseData.sets }).map((_, setIndex) => (
             <View key={setIndex} style={styles.setContainer}>
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Set {setIndex + 1} Reps:</Text>
@@ -169,21 +171,22 @@ export default function ExerciseDetailsScreen() {
                 />
               </View>
             </View>
-          ))}
+          )) : <View style={styles.inputContainer}>
+            <Text style={styles.label}>Duration (s):</Text>
+            <TextInput
+              style={styles.input}
+              value={exerciseData.duration.toString()}
+              onChangeText={(value) => handleInputChange('duration', null, value)}
+              keyboardType="numeric"
+              placeholder="Enter duration"
+            />
+          </View>
+
+          }
         </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Total Sets:</Text>
-          <TextInput
-            style={styles.input}
-            value={exerciseData.sets.toString()}
-            onChangeText={(value) => handleInputChange('sets', null, value)}
-            keyboardType="numeric"
-            placeholder="Enter sets"
-          />
-        </View>
 
-        <View style={styles.inputContainer}>
+       { !exerciseData.duration && <View style={styles.inputContainer}>
           <Text style={styles.label}>Rest (s):</Text>
           <TextInput
             style={styles.input}
@@ -192,22 +195,12 @@ export default function ExerciseDetailsScreen() {
             keyboardType="numeric"
             placeholder="Enter rest time"
           />
-        </View>
+        </View>}
       </View>
     </View>
   );
 
-  const renderViewMode = () => (
-    <View style={styles.container}>
-      <View style={styles.exerciseBlock}>
-        <Text style={styles.exerciseName}>{exerciseData.name}</Text>
-        <Text style={styles.label}>Reps: {exerciseData.reps.join(', ')}</Text>
-        <Text style={styles.label}>Weight: {exerciseData.weight.join(', ')}</Text>
-        <Text style={styles.label}>Sets: {exerciseData.sets}</Text>
-        <Text style={styles.label}>Rest: {exerciseData.rest}</Text>
-      </View>
-    </View>
-  );
+
 
   return (
     <ScrollView>
@@ -221,7 +214,7 @@ export default function ExerciseDetailsScreen() {
           </TouchableOpacity>}
         </View>
 
-        {isEdit ? renderEditForm() : renderViewMode()}
+        {isEdit ? renderEditForm() : renderViewMode({ exercise })}
 
         <MuscleHistory
           exercises={[exercise]}

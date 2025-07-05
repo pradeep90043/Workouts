@@ -3,7 +3,7 @@ import { Link } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { getExerciseImage } from "../utils/exerciseImages";
-
+import { renderViewMode } from "./ViewDetails";
 const MuscleGroup = ({ exercises }) => {
 const params = useLocalSearchParams();
 console.log({params, exercises})
@@ -25,13 +25,7 @@ console.log({params, exercises})
                 style={styles.exerciseImage}
                 resizeMode="cover"
               />
-              <View style={styles.exerciseInfo}>
-                <Text style={styles.exerciseName}>{exercise.name}</Text>
-                <Text style={styles.label}>Reps: {exercise.stats[0]?.sets?.map((set) => set.reps).join(", ") || 'N/A'}</Text>
-                <Text style={styles.label}>Weight: {exercise.stats[0]?.sets?.map((set) => set.weight).join(", ") || 'N/A'}</Text>
-                <Text style={styles.label}>Sets: {exercise.stats[0]?.sets?.length || '0'}</Text>
-                <Text style={styles.label}>Rest: {exercise.stats[0]?.sets?.map((set) => set.rest).join(", ") || 'N/A'}</Text>
-              </View>
+         {renderViewMode({exercise})}  
             </View>
           </TouchableOpacity>
         </Link>

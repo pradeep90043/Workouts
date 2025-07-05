@@ -32,13 +32,13 @@ export default function ExerciseDetailsScreen() {
  
 
  
-console.log(workouts[0].muscleGroups)
+console.log(workouts)
   return (
     <ScrollView>
       <View style={styles.container}>
         <MuscleGroup
           muscle={name}
-          exercises={workouts[0].muscleGroups.find((group) => group.name === name)?.exercises}
+          exercises={workouts.find((group) => group.name === name)?.exercises}
      
         />
       </View>

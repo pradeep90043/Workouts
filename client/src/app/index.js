@@ -16,7 +16,7 @@ const MUSCLE_GROUPS_ICONS = [
 
 export default function App() {
   const { workouts, loading, error, refreshWorkouts } = useWorkouts();
-  const MUSCLE_GROUPS = workouts?.[0]?.muscleGroups?.map((workout) => {
+  const MUSCLE_GROUPS = workouts?.map((workout) => {
     return {
       name: MUSCLE_GROUPS_ICONS.find((icon) => icon.name === workout?.name?.toLowerCase())?.name || workout.name,
       icon:MUSCLE_GROUPS_ICONS.find((icon) => icon.name === workout?.name?.toLowerCase())?.icon,

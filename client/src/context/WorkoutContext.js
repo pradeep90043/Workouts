@@ -13,9 +13,9 @@ export const WorkoutProvider = ({ children }) => {
       const response = await fetch(`${API_BASE_URL}/api/workouts/summary`);
       const result = await response.json();
       console.log({ result })
-      if (result.status === 'success') {
+      if (result.statusCode === 200) {
         setLoading(false);
-        setWorkouts(result.data);
+        setWorkouts(result.muscleGroups);
       }
     } catch (error) {
       console.error('Error fetching workouts:', error);

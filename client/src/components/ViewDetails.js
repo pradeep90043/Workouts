@@ -1,18 +1,22 @@
+import { StyleSheet, View, Text } from "react-native";
 
 
-
-export const renderViewMode = ({exercise}) => (
+const arrayJoin = (array) => array.join(", ");
+export const renderViewMode = ({exercise}) => {
+    const stats = exercise?.stats?.[0];
+    const sets = stats?.sets;
+    return(
     <View style={styles.container}>
         <View style={styles.exerciseBlock}>
             <Text style={styles.exerciseName}>{exercise.name}</Text>
-            <Text style={styles.label}>Reps: {exercise.stats[0].sets?.map((set) => set.reps).join(", ") || 'N/A'}</Text>
-            <Text style={styles.label}>Weight: {exercise.stats[0].sets?.map((set) => set.weight).join(", ") || 'N/A'}</Text>
-            <Text style={styles.label}>Sets: {exercise.stats[0].sets?.length}</Text>
-            <Text style={styles.label}>Rest: {exercise.stats[0].sets?.map((set) => set.rest).join(", ") || 'N/A'}</Text>
-
+           {sets?.length>0 && (<Text style={styles.label}>Reps: {arrayJoin(sets?.map((set) => set.reps)) || 'N/A'}</Text>)}
+           {sets?.length>0 && (<Text style={styles.label}>Weight: {arrayJoin(sets?.map((set) => set.weight)) || 'N/A'}</Text>)}
+           {sets?.length>0 && (<Text style={styles.label}>Sets: {sets?.length || 'N/A'}</Text>)}
+           {stats?.rest>0 && (<Text style={styles.label}>Rest: {stats.rest || 'N/A'}</Text>)}
+           { stats?.duration>0 && (<Text style={styles.label}>Duration (min): {stats.duration || 'N/A'}</Text>)}
         </View>
     </View>
-);
+)};
 
 const styles = StyleSheet.create({
     container: {
