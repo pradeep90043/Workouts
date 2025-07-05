@@ -40,44 +40,43 @@ import pushdownCurl from "../../assets/images/exercises/arms/pushdown-curl.jpg"
 
 // Map of exercise names to their images
 const exerciseImages = {
-    situps: squat,
-    leg_extension: legExtension,
-    leg_curl: legCurl,
-    calf_raise: calfRaise,
-    goblet_squat: gobletSquat,
-    shrugs: shrugs,
-    dumbbell_shoulder_press: dumbellPress,
-    dumbbell_lateral_raise: dumbbellLateralRaise,
-    dumbbell_front_raise: dumbbellFrontRaise,
-    reverse_fly: reverseFly,
-    flat_bench_press: benchPress,
-    incline_dumbbell_press: inclineDumbbellPress,
-    decline_barbell_press: declineDumbbellPress,
-    machine_flys: machineFlys,
-    dumbbell_cr_flys: dumbbellFlys,
-    deadlift: deadlift,
-    lat_pulldown: latPulldown,
-    cable_row: cableRow,
-   dumble_one_arm_row: oneArmDumbbell,
-    tbar: tbar,
-    barbell_curl: barbellCurl,
-    concentration_curl: concentratedCurl,
-    dumbbell_curl: dumbbellCurl,
-    hammer_curl: hammerCurl,
-    overhead_tricep_extension: overHead,
-    tricep_pushdown: pushdown,
-    pushdown_curl: pushdownCurl,
+  squat: squat,
+  leg_extension: legExtension,
+  leg_curl: legCurl,
+  calf_raise: calfRaise,
+  goblet_squat: gobletSquat,
+  shrugs: shrugs,
+  dumbbell_shoulder_press: dumbellPress,
+  dumbbell_lateral_raise: dumbbellLateralRaise,
+  dumbbell_front_raise: dumbbellFrontRaise,
+  reverse_fly: reverseFly,
+  flat_bench_press: benchPress,
+  incline_dumbbell_press: inclineDumbbellPress,
+  decline_barbell_press: declineDumbbellPress,
+  machine_flys: machineFlys,
+  dumbbell_cr_flys: dumbbellFlys,
+  deadlift: deadlift,
+  lat_pulldown: latPulldown,
+  cable_row: cableRow,
+  dumble_one_arm_row: oneArmDumbbell,
+  tbar: tbar,
+  barbell_curl: barbellCurl,
+  concentration_curl: concentratedCurl,
+  dumbbell_curl: dumbbellCurl,
+  hammer_curl: hammerCurl,
+  overhead_tricep_extension: overHead,
+  tricep_pushdown: pushdown,
+  pushdown_curl: pushdownCurl,
 }
 // Local images for exercises we have, CDN for others
-        console.log({squat})
 /**
  * Get the appropriate image for an exercise
  * @param {string} exerciseName - The name of the exercise
  * @returns {Object} Image source object (local import or URI)
  */
-export const getExerciseImage = (exerciseName) => {     
+export const getExerciseImage = (exerciseName) => {
   if (!exerciseName) return DEFAULT_IMAGE;
-  
+
   const imageName = exerciseName.toLowerCase().replace(/\s+/g, '_');
   return exerciseImages[imageName] || DEFAULT_IMAGE;
 };

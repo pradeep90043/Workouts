@@ -10,19 +10,17 @@ export const WorkoutProvider = ({ children }) => {
 
   const fetchWorkouts = async () => {
     try {
-      setLoading(true);
       const response = await fetch(`${API_BASE_URL}/api/workouts/summary`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const result = await response.json();
+      console.log({ result })
+      if (result.status === 'success') {
+        setLoading(false);
+        setWorkouts(result.data);
       }
-      const data = await response.json();
-      setWorkouts(data.data || []);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching workouts:', err);
-      setError(err.message);
-    } finally {
+    } catch (error) {
+      console.error('Error fetching workouts:', error);
       setLoading(false);
+      setError(error);
     }
   };
 

@@ -3,20 +3,26 @@ import { FlatList, StyleSheet, Text, View, Pressable, ActivityIndicator } from '
 import { useWorkouts } from '@context/WorkoutContext';
 import { TouchableOpacity } from "react-native";
 
-const MUSCLE_GROUPS = [
-  { name: "Legs", icon: "🦵" },
-  { name: "Biceps", icon: "💪" },
-  { name: "Triceps", icon: "💪" },
-  { name: "Chest", icon: "🫁" },
-  { name: "Back", icon: "🧗" },
-  { name: "Shoulders", icon: "🙆‍♂️" },
-  // { name: "Core", icon: "🪨" },
-  // { name: "Cardio", icon: "🏃" },
-  // { name: "Full Body", icon: "👤" }
+const MUSCLE_GROUPS_ICONS = [
+  { name: "legs", icon: "🦵" ,order:1},
+  { name: "biceps", icon: "💪" ,order:2},
+  { name: "triceps", icon: "💪" ,order:3},
+  { name: "chest", icon: "🫁" ,order:4},
+  { name: "back", icon: "🧗" ,order:5},
+  { name: "shoulders", icon: "🙆‍♂️" ,order:6},
+  { name: "core", icon: "🪨" ,order:7},
+  { name: "cardio", icon: "🏃" ,order:8},
 ];
 
 export default function App() {
   const { workouts, loading, error, refreshWorkouts } = useWorkouts();
+  const MUSCLE_GROUPS = workouts?.[0]?.muscleGroups?.map((workout) => {
+    return {
+      name: MUSCLE_GROUPS_ICONS.find((icon) => icon.name === workout?.name?.toLowerCase())?.name || workout.name,
+      icon:MUSCLE_GROUPS_ICONS.find((icon) => icon.name === workout?.name?.toLowerCase())?.icon,
+      order:MUSCLE_GROUPS_ICONS.find((icon) => icon.name === workout?.name?.toLowerCase())?.order
+    }
+  }).sort((a, b) => a.order - b.order);
   
   if (loading) {
     return (
@@ -43,7 +49,7 @@ export default function App() {
         contentContainerStyle={{ gap: 16, padding: 16 }}
         keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
-          <Link href={`/${item.name.toLowerCase()}`} asChild>
+          <Link href={`/${item?.name?.toLowerCase()}`} asChild>
             <TouchableOpacity style={styles.muscleItem}>
               <Text style={styles.muscleIcon}>{item.icon}</Text>
               <Text style={styles.muscleName}>{item.name}</Text>
