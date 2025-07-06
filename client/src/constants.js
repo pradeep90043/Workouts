@@ -1,7 +1,7 @@
 // Centralized constants for the client application
 
 // Production API URL
-export const API_BASE_URL = 'https://workouts-server-sm89.onrender.com';
+// export const API_BASE_URL = 'https://workouts-server-sm89.onrender.com';
 // Update the PORT here if the Express backend changes
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
@@ -12,4 +12,4 @@ const localhost = Platform.select({
   web: 'localhost',
   default: Constants.expoConfig?.hostUri?.split(':')[0] || 'localhost',
 });
-// export const API_BASE_URL = `http://${localhost}:${PORT}`;
+export const API_BASE_URL = `http://${localhost}:${PORT}`;

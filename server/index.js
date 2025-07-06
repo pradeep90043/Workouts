@@ -2,13 +2,24 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const workoutRoutes = require('./routes/workoutRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:3001', 'http://localhost:3000', 'http://127.0.0.1:3001',"http://localhost:19006",'http://192.168.0.115:19006',  // Add this
+        'http://192.168.0.115:3001'  ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+}));
 app.use(express.json());
+app.use(cookieParser());
 
 // Request logging
 app.use((req, res, next) => {
@@ -26,6 +37,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // API Routes
+app.use('/api/v1/auth', authRoutes);
 app.use('/api/workouts', workoutRoutes);
 
 // Error handling middleware

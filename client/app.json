@@ -50,6 +50,9 @@
       "web"
     ],
     "scheme": "workouts",
-    "jsEngine": "hermes"
+    "jsEngine": "hermes",
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }

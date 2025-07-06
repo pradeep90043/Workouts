@@ -1,24 +1,30 @@
-import { Stack } from "expo-router";
-import { WorkoutProvider } from '@context/WorkoutContext';
+// src/app/_layout.js
+import { Stack } from 'expo-router';
+import { View, ActivityIndicator } from 'react-native';
+import { useFonts } from 'expo-font';
+import { AuthProvider } from '../context/AuthContext';
+import { WorkoutProvider } from '../context/WorkoutContext';
 
-export default function RootLayout() {
+function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    // Add your fonts here if needed
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
-    <WorkoutProvider>
-      <Stack>
-        <Stack.Screen name="index" options={{ title: "Exercises" }} />
-        <Stack.Screen 
-          name="[name]" 
-          options={({ route }) => ({
-            title: route.params?.name || 'Exercise Details'
-          })}
-        />
-        <Stack.Screen 
-          name="exercise/[muscle]/[exercise]" 
-          options={({ route }) => ({
-            title: `${route.params?.muscle.replace(/%20/g, ' ') || ''} - ${route.params?.exercise.replace(/%20/g, ' ') || ''}`
-          })}
-        />
-      </Stack>
-    </WorkoutProvider>
+    <AuthProvider>
+      <WorkoutProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+      </WorkoutProvider>
+    </AuthProvider>
   );
 }
+
+export default RootLayout;

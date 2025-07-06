@@ -33,3 +33,5 @@ Content-Type: application/json
 
 ### Delete Workout
 DELETE {{baseUrl}}/api/workouts/1
+
+
