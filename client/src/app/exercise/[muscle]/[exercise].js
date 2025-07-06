@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { Link, useLocalSearchParams } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
+import { Link, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 // Using addWorkout from WorkoutContext
 import MuscleHistory from '../../../components/MuscleHistory';
@@ -206,6 +206,15 @@ export default function ExerciseDetailsScreen() {
 
 
   return (
+    <>
+    <Stack.Screen
+      options={{
+        title: exercise?.name?.charAt(0).toUpperCase() + exercise?.name?.slice(1), // Capitalize first letter
+        headerBackTitle: 'Back',
+        headerShown: true,
+      }}
+    />
+    <SafeAreaView style={styles.container}>
     <ScrollView>
       <View style={styles.screenContainer}>
         <View style={styles.header}>
@@ -220,10 +229,12 @@ export default function ExerciseDetailsScreen() {
         {isEdit ? renderEditForm() : renderViewMode({ exercise })}
 
         <MuscleHistory
-          exercises={[exercise]}
+          exercise={exercise}
         />
       </View>
     </ScrollView>
+    </SafeAreaView>
+    </>
   );
 }
 

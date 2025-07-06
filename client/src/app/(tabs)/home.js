@@ -1,37 +1,14 @@
 // app/(tabs)/home.js
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
 import { Link } from 'expo-router';
 import { ActivityIndicator } from 'react-native-paper';
 import { useWorkouts } from '../../context/WorkoutContext';
+import { useAuth } from '../../context/AuthContext';
 
-const MUSCLE_GROUPS_ICONS = [
-  { name: "legs", icon: "🦵", order: 1 },
-  { name: "biceps", icon: "💪", order: 2 },
-  { name: "triceps", icon: "💪", order: 3 },
-  { name: "chest", icon: "🫁", order: 4 },
-  { name: "back", icon: "🧗", order: 5 },
-  { name: "shoulders", icon: "🙆‍♂️", order: 6 },
-  { name: "core", icon: "🪨", order: 7 },
-  { name: "cardio", icon: "🏃", order: 8 },
-];
 
 export default function HomeScreen() {
-  const { workouts, loading, error, refreshWorkouts } = useWorkouts();
-  
-  const MUSCLE_GROUPS = workouts?.map((workout) => {
-    return {
-      name: MUSCLE_GROUPS_ICONS.find((icon) => 
-        icon.name === workout?.name?.toLowerCase()
-      )?.name || workout.name,
-      icon: MUSCLE_GROUPS_ICONS.find((icon) => 
-        icon.name === workout?.name?.toLowerCase()
-      )?.icon,
-      order: MUSCLE_GROUPS_ICONS.find((icon) => 
-        icon.name === workout?.name?.toLowerCase()
-      )?.order
-    }
-  }).sort((a, b) => a.order - b.order);
-
+const {user,loading,error} = useAuth();
+const userDetail = user?.data;
   if (loading) {
     return (
       <View style={[styles.container, styles.centered]}>
@@ -52,21 +29,12 @@ export default function HomeScreen() {
   }
 
   return (
+    <SafeAreaView style={styles.container}>
     <View style={styles.container}>
-      <FlatList
-        data={MUSCLE_GROUPS}
-        contentContainerStyle={{ gap: 16, padding: 16 }}
-        keyExtractor={(item) => item.name}
-        renderItem={({ item }) => (
-          <Link href={`/workouts/${item?.name?.toLowerCase()}`} asChild>
-            <TouchableOpacity style={styles.muscleItem}>
-              <Text style={styles.muscleIcon}>{item.icon}</Text>
-              <Text style={styles.muscleName}>{item.name}</Text>
-            </TouchableOpacity>
-          </Link>
-        )}
-      />
+     <Text style={styles.title}>Welcome Back, {userDetail?.username || 'User'}!</Text>
+    
     </View>
+    </SafeAreaView>
   );
 }
 
@@ -74,10 +42,21 @@ const styles = {
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
+    padding: 16,
   },
   centered: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 16,
   },
   muscleItem: {
     backgroundColor: "white",

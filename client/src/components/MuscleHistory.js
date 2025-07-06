@@ -2,16 +2,13 @@ import { StyleSheet, View, ScrollView, Text } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import { format } from 'date-fns';
 
-const MuscleHistory = ({ exercises }) => {
+const MuscleHistory = ({ exercise }) => {
   const columns = [
-    { title: 'Date', minWidth: 70 },
-    { title: 'Sets', minWidth: 20 },
-    { title: 'Reps', minWidth: 20 },
-    { title: 'Weight (kg)', minWidth: 90 },
-    { title: 'Rest (s)', minWidth: 70 },
+    { title: 'Date' },
+    { ...exercise.stats?.[0]?.duration ? { title: 'Duration (min)' } : { title: 'Weight x Reps' } },
   ];
 
- console.log({exercises},"history")
+  console.log({ exercise }, "history")
 
 
 
@@ -21,21 +18,18 @@ const MuscleHistory = ({ exercises }) => {
         <DataTable style={styles.table}>
           <DataTable.Header>
             {columns.map((column, index) => (
-              <DataTable.Title key={index} style={{ ...styles.headerCell, width: column.width }}>
+              <DataTable.Title key={index} style={{ ...styles.headerCell, width: "100%" }}>
                 {column.title}
               </DataTable.Title>
             ))}
           </DataTable.Header>
 
-          {exercises?.[0]?.stats?.map((workout, index) => (
+          {exercise?.stats?.map((stat, index) => (
             <DataTable.Row key={index}>
               <DataTable.Cell style={styles.cell}>
-                {format(new Date(workout.date), 'dd MMM')}
+                {format(new Date(stat.date), 'dd MMM')}
               </DataTable.Cell>
-              <DataTable.Cell style={styles.setCell}>{workout.sets.length}</DataTable.Cell>
-              <DataTable.Cell style={styles.cell}>{workout.sets?.map((set) => set.reps).join(', ')}</DataTable.Cell>
-              <DataTable.Cell style={styles.weightCell}>{workout.sets?.map((set) => set.weight).join(', ')}</DataTable.Cell>
-              <DataTable.Cell style={styles.restCell}>{workout.sets?.map((set) => set.rest).join(', ')}</DataTable.Cell>
+              {stat?.duration ? <DataTable.Cell style={styles.cell}>{stat.duration}</DataTable.Cell> : <DataTable.Cell style={styles.cell}>  {stat.sets?.map(set => `(${set.weight} x ${set.reps})`).join(', ')}</DataTable.Cell>}
             </DataTable.Row>
           ))}
         </DataTable>
@@ -55,26 +49,14 @@ const styles = StyleSheet.create({
   },
   headerCell: {
     backgroundColor: '#f5f5f5',
+    width: "50%",
+    minWidth: "50%",
+    maxWidth: "100%",
   },
   cell: {
-    width: "100%",
-    minWidth: 70,
-    maxWidth: 70,
-  },
-  setCell: {
-    width: "100%",
-    minWidth: 20,
-    maxWidth: 100,
-  },
-  restCell: {
-    width: "100%",
-    minWidth: 20,
-    maxWidth: 100,
-  },
-  weightCell: {
-    width: "100%",
-    minWidth: 90,
-    maxWidth: 90,
+    width: "50%",
+    minWidth: "50%",
+    maxWidth: "100%",
   },
 });
 

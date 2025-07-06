@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
+import { router } from 'expo-router';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -26,7 +27,7 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     console.log('Login button pressed');
-    // Keyboard.dismiss();
+    Keyboard.dismiss();
     
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
@@ -37,13 +38,17 @@ const LoginScreen = () => {
     
     try {
       const result = await login(email, password);
-      console.log('Login result:', result);
       if (result.success) {
         // Show welcome message
         Alert.alert(
           'Welcome Back!',
           `You've successfully logged in as ${email}`,
-          [{ text: 'Continue' }]
+          [{
+            text: 'Continue',
+            onPress: () => {
+              router.replace('/(tabs)/home');
+            }
+          }]
         );
       } else {
         Alert.alert('Login Failed', result.message || 'An error occurred during login');

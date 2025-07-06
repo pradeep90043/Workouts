@@ -5,16 +5,18 @@ import { useLocalSearchParams } from "expo-router";
 import { getExerciseImage } from "../utils/exerciseImages";
 import { renderViewMode } from "./ViewDetails";
 const MuscleGroup = ({ exercises }) => {
-const params = useLocalSearchParams();
-console.log({params, exercises})
+console.log({ exercises})
   const defaultJSx = () => (
     <View style={styles.container}>
       {exercises?.map((exercise, index) => (
         <Link 
-          href={{ 
-            pathname: `/exercise/${params.name}/${exercise.name}`,
-            query: { muscle: params.name }
-          }} 
+        href={{
+          pathname: "/[muscle]/[exercise]",
+          params: { 
+            exercise: exercise.name,
+            muscle: exercise.muscleGroup
+          }
+        }} 
           asChild 
           key={index}
         >

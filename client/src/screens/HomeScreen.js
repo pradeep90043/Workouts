@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 
 const HomeScreen = () => {
+  console.log("home screen inside home screen");
   const { user } = useAuth();
 
   return (

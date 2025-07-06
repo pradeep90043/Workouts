@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { authAPI } from '../utils/api';
 
@@ -14,12 +14,36 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState(null);
 
+  const storage = {
+    async getItem(key) {
+      if (Platform.OS === 'web') {
+        return localStorage.getItem(key);
+      }
+      const result = await SecureStore.getItemAsync(key);
+      console.log(key, result);
+      return result;
+    },
+    async setItem(key, value) {
+      if (Platform.OS === 'web') {
+        localStorage.setItem(key, value);
+        return;
+      }
+      await SecureStore.setItemAsync(key, value);
+    },
+    async removeItem(key) {
+      if (Platform.OS === 'web') {
+        localStorage.removeItem(key);
+        return;
+      }
+      await SecureStore.deleteItemAsync(key);
+    }
+  };
   // Load user data from SecureStore and validate with server
   const loadUserData = useCallback(async () => {
     try {
       const [token, userData] = await Promise.all([
-        SecureStore.getItemAsync(TOKEN_KEY),
-        SecureStore.getItemAsync(USER_KEY),
+        storage.getItem(TOKEN_KEY),
+        storage.getItem(USER_KEY),
       ]);
 
       if (token && userData) {
@@ -64,14 +88,13 @@ export const AuthProvider = ({ children }) => {
     console.log('Login function called');
     try {
       const response = await authAPI.login(email, password);
-      console.log('Login response:', response);
       if (response.success) {
         const { token, user } = response;
         
         // Store the token and user data
         await Promise.all([
-          SecureStore.setItemAsync(TOKEN_KEY, token),
-          SecureStore.setItemAsync(USER_KEY, JSON.stringify(user)),
+          storage.setItem(TOKEN_KEY, token),
+          storage.setItem(USER_KEY, JSON.stringify(user)),
         ]);
         
         setUser(user);
@@ -102,12 +125,13 @@ export const AuthProvider = ({ children }) => {
         
         // Store the token and user data
         await Promise.all([
-          SecureStore.setItemAsync(TOKEN_KEY, token),
-          SecureStore.setItemAsync(USER_KEY, JSON.stringify(user)),
+          storage.setItem(TOKEN_KEY, token),
+          storage.setItem(USER_KEY, JSON.stringify(user)),
         ]);
         
         setUser(user);
         setIsAuthenticated(true);
+        console.log('User registered auth true', user);
         return { success: true };
       }
       
@@ -126,8 +150,8 @@ export const AuthProvider = ({ children }) => {
     try {
       // Clear stored data
       await Promise.all([
-        SecureStore.deleteItemAsync(TOKEN_KEY),
-        SecureStore.deleteItemAsync(USER_KEY),
+        storage.removeItem(TOKEN_KEY),
+        storage.removeItem(USER_KEY),
       ]);
       
       // Reset state
@@ -146,6 +170,16 @@ export const AuthProvider = ({ children }) => {
   const clearError = () => {
     setError(null);
   };
+  console.log('AuthContext', {
+    user,
+    isLoading,
+    isAuthenticated,
+    error,
+    login,
+    register,
+    logout,
+    clearError,
+  });
 
   return (
     <AuthContext.Provider

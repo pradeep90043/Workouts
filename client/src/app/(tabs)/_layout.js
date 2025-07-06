@@ -4,29 +4,25 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   return (
-    <Tabs
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
-          if (route.name === 'home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'workouts') {
-            iconName = focused ? 'barbell' : 'barbell-outline';
-          } else if (route.name === 'profile') {
-            iconName = focused ? 'person' : 'person-outline';
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: 'gray',
-        headerShown: false,
-      })}
-    >
-      <Tabs.Screen name="home" options={{ title: 'Home' }} />
-      <Tabs.Screen name="workouts" options={{ title: 'Workouts' }} />
-      <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
+    <Tabs screenOptions={{ headerShown: false }}>
+      <Tabs.Screen name="home" options={{ 
+        title: 'Home',
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="home" size={size} color={color} />
+        ),
+      }} />
+      <Tabs.Screen name="workout" options={{  // Changed from "workouts" to "workout"
+        title: 'Workouts',
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="barbell" size={size} color={color} />
+        ),
+      }} />
+      <Tabs.Screen name="profile" options={{ 
+        title: 'Profile',
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="person" size={size} color={color} />
+        ),
+      }} />
     </Tabs>
   );
 }

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 
 const ProfileScreen = () => {
+  console.log("profile screen inside profile screen");
   const { user, logout } = useAuth();
 
   const handleLogout = async () => {
