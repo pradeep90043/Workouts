@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 const ProfileScreen = () => {
   console.log("profile screen inside profile screen");
@@ -26,12 +27,14 @@ const ProfileScreen = () => {
                 Alert.alert(
                   'Logged Out',
                   'You have been successfully logged out.',
-                  [{ text: 'OK' }]
+                  [{ text: 'OK' , onPress: () => router.replace('/login')}]
                 );
               } else {
                 Alert.alert('Error', result.message || 'Failed to log out. Please try again.');
               }
             } catch (error) {
+                       SecureStore.deleteItemAsync("auth_token");
+                       SecureStore.deleteItemAsync("user_data");
               console.error('Logout error:', error);
               Alert.alert('Error', 'An unexpected error occurred during logout.');
             }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 
 const HomeScreen = () => {
@@ -7,6 +7,7 @@ const HomeScreen = () => {
   const { user } = useAuth();
 
   return (
+    <SafeAreaView style={styles.container}>
     <View style={styles.container}>
       <Text style={styles.title}>Welcome Back, {user?.username || 'User'}!</Text>
       <Text style={styles.subtitle}>Track your workouts and see your progress</Text>
@@ -17,6 +18,7 @@ const HomeScreen = () => {
         <Text style={styles.cardText}>No workout planned for today</Text>
       </View>
     </View>
+    </SafeAreaView>
   );
 };
 

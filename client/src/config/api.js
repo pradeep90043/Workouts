@@ -1,7 +1,5 @@
 // API base URL - this should come from environment variables in production
-const API_BASE_URL = __DEV__ 
-  ? 'http://192.168.0.115:8080/api/v1'  // Use your computer's local IP
-  : 'https://workouts-server-sm89.onrender.com/api/v1';
+const API_BASE_URL = 'https://workouts-server-sm89.onrender.com/api/v1';
 
 export const ENDPOINTS = {
   AUTH: {
