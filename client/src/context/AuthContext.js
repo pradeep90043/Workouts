@@ -16,25 +16,14 @@ export const AuthProvider = ({ children }) => {
 
   const storage = {
     async getItem(key) {
-      if (Platform.OS === 'web') {
-        return localStorage.getItem(key);
-      }
       const result = await SecureStore.getItemAsync(key);
       console.log(key, result);
       return result;
     },
     async setItem(key, value) {
-      if (Platform.OS === 'web') {
-        localStorage.setItem(key, value);
-        return;
-      }
       await SecureStore.setItemAsync(key, value);
     },
     async removeItem(key) {
-      if (Platform.OS === 'web') {
-        localStorage.removeItem(key);
-        return;
-      }
       await SecureStore.deleteItemAsync(key);
     }
   };

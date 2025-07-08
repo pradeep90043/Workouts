@@ -149,6 +149,14 @@ export const workoutAPI = {
     }
   },
   // Add other workout-related API calls here
+  updateWorkout: async (workoutData) => {
+    try {
+      const response = await api.put(`${ENDPOINTS.WORKOUTS.BASE}/${workoutData.id}`, workoutData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
 };
 
 export default api;

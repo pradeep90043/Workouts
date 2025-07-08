@@ -1,34 +1,72 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { useWorkouts } from '../context/WorkoutContext';
 
 const WorkoutsScreen = () => {
-  const { workouts } = useWorkouts();
+  const { workouts, loading, error, refreshWorkouts } = useWorkouts();
+
+  // Refresh data on screen focus
+  useEffect(() => {
+    refreshWorkouts();
+  }, []);
 
   const renderWorkoutItem = ({ item }) => (
     <View style={styles.workoutItem}>
-      <Text style={styles.workoutName}>{item.name}</Text>
-      <Text style={styles.workoutDetails}>{item.muscleGroup} • {item.sets} sets</Text>
+      <Text style={styles.workoutName}>{item.name || 'Unnamed Workout'}</Text>
+      {item.muscleGroup && (
+        <Text style={styles.workoutDetails}>
+          {item.muscleGroup}
+          {item.sets ? ` • ${item.sets} sets` : ''}
+        </Text>
+      )}
     </View>
   );
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text style={styles.loadingText}>Loading workouts...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.errorText}>Error loading workouts</Text>
+        <Text style={styles.errorSubtext}>{error}</Text>
+        <Text style={styles.retryText} onPress={refreshWorkouts}>
+          Tap to retry
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>My Workouts</Text>
       
-      {workouts && workouts.length > 0 ? (
-        <FlatList
-          data={workouts}
-          renderItem={renderWorkoutItem}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={styles.listContainer}
-        />
-      ) : (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No workouts found</Text>
-          <Text style={styles.emptySubtext}>Start by adding a new workout</Text>
-        </View>
-      )}
+      <FlatList
+        data={workouts}
+        renderItem={renderWorkoutItem}
+        keyExtractor={(item, index) => item._id || `workout-${index}`}
+        contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No workouts found</Text>
+            <Text style={styles.emptySubtext}>Start by adding a new workout</Text>
+          </View>
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={refreshWorkouts}
+            colors={['#007AFF']}
+            tintColor="#007AFF"
+          />
+        }
+      />
     </View>
   );
 };
@@ -38,6 +76,30 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#666',
+  },
+  errorText: {
+    fontSize: 18,
+    color: '#FF3B30',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  errorSubtext: {
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  retryText: {
+    color: '#007AFF',
+    fontSize: 16,
+    padding: 8,
   },
   title: {
     fontSize: 24,
