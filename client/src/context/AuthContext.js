@@ -113,15 +113,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Register function using the API client
-  const register = async (username, email, password) => {
+  const register = async (userData) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const response = await authAPI.register(username, email, password);
+      // Ensure we're sending the correct data structure to the API
+      const response = await authAPI.register(userData);
+      console.log('Registration response:', response);
       
       if (response.success) {
-        const { token, user } = response.data;
+        const { token, user } = response;
+        console.log('User registered successfully:', user);
         
         // Store the token and user data
         await Promise.all([
@@ -131,12 +134,12 @@ export const AuthProvider = ({ children }) => {
         
         setUser(user);
         setIsAuthenticated(true);
-        console.log('User registered auth true', user);
         return { success: true };
       }
       
       throw new Error(response.message || 'Registration failed');
     } catch (error) {
+      console.error('Registration error:', error);
       const errorMessage = error.message || 'An error occurred during registration';
       setError(errorMessage);
       return { success: false, message: errorMessage };

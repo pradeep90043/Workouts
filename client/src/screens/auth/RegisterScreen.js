@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
+import { router } from 'expo-router';
 
 const RegisterScreen = () => {
   console.log("register screen inside register screen");
@@ -62,7 +63,7 @@ const RegisterScreen = () => {
     
     try {
       // Call the register function from AuthContext
-      const result = await register(username, email, password);
+      const result = await register({username, email, password});
       
       if (!result.success) {
         setError(result.message || 'Registration failed. Please try again.');
@@ -71,7 +72,7 @@ const RegisterScreen = () => {
         Alert.alert(
           'Registration Successful',
           'Your account has been created successfully!',
-          [{ text: 'OK' }]
+          [{ text: 'OK' , onPress: () => router.replace('/login') }]
         );
       }
     } catch (error) {
@@ -93,6 +94,7 @@ const RegisterScreen = () => {
           <Text style={styles.subtitle}>Join us to start your fitness journey</Text>
           
           <View style={styles.inputContainer}>
+        
             <Text style={styles.label}>Username</Text>
             <TextInput
               style={styles.input}
@@ -151,13 +153,16 @@ const RegisterScreen = () => {
               <Text style={styles.buttonText}>Create Account</Text>
             )}
           </TouchableOpacity>
-          
+          {error && (
+          <Text style={styles.errorText}>{error}</Text>
+        )}
           <View style={styles.footer}>
             <Text style={styles.footerText}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <TouchableOpacity onPress={() => router.replace('/login')}>
               <Text style={styles.linkText}>Sign In</Text>
             </TouchableOpacity>
           </View>
+        
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -246,6 +251,12 @@ const styles = StyleSheet.create({
   linkText: {
     color: '#007AFF',
     fontWeight: '600',
+  },
+  errorText: {
+    color: '#FF0000',
+    fontSize: 12,
+    marginTop: 8,
+    textAlign: 'center',
   },
 });
 
