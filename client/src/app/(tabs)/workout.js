@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from
 import { Link } from 'expo-router';
 import { ActivityIndicator } from 'react-native-paper';
 import { useWorkouts } from '../../context/WorkoutContext';
+import { useEffect } from 'react';
 
 const MUSCLE_GROUPS_ICONS = [
   { name: "legs", icon: "🦵", order: 1 },
@@ -17,6 +18,10 @@ const MUSCLE_GROUPS_ICONS = [
 
 export default function HomeScreen() {
   const { workouts, loading, error, refreshWorkouts } = useWorkouts();
+
+  useEffect(() => {
+    refreshWorkouts();
+  }, []);
   
   const MUSCLE_GROUPS = workouts?.map((workout) => {
     return {

@@ -131,11 +131,6 @@ console.log('Fetch workouts response:', response);
     }
   };
 
-  // Initial fetch
-  useEffect(() => {
-    fetchWorkouts();
-  }, []);
-
   return (
     <WorkoutContext.Provider
       value={{

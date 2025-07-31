@@ -1,5 +1,6 @@
 // API base URL - this should come from environment variables in production
-const API_BASE_URL = 'https://workouts-server-sm89.onrender.com/api/v1';
+// const API_BASE_URL = "https://workouts-server-sm89.onrender.com/api/v1";
+const API_BASE_URL = "http://localhost:8080/api/v1";
 
 export const ENDPOINTS = {
   AUTH: {
