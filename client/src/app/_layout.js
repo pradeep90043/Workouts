@@ -4,6 +4,7 @@ import { View, ActivityIndicator } from 'react-native';
 import { useFonts } from 'expo-font';
 import { AuthProvider } from '../context/AuthContext';
 import { WorkoutProvider } from '../context/WorkoutContext';
+import { UserDetailsProvider } from '../context/UserDetailsContext';
 
 function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -20,9 +21,11 @@ function RootLayout() {
 
   return (
     <AuthProvider>
+      <UserDetailsProvider>
       <WorkoutProvider>
         <Stack screenOptions={{ headerShown: false }} />
       </WorkoutProvider>
+      </UserDetailsProvider>
     </AuthProvider>
   );
 }

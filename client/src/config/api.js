@@ -12,6 +12,10 @@ export const ENDPOINTS = {
     BASE: `${API_BASE_URL}/workouts`,
     SUMMARY: `${API_BASE_URL}/workouts/summary`,
   },
+  USER_DETAILS: {
+    ME: `${API_BASE_URL}/userDetails/me`,
+    UPDATE: `${API_BASE_URL}/userDetails/update`,
+  },
 };
 
 export default {
