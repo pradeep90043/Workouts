@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import { BarChart, LineChart } from 'react-native-chart-kit';
 import { ENDPOINTS } from '../config/api';
 import { format } from 'date-fns';
 import { mealAPI } from '../utils/api';
@@ -16,12 +16,54 @@ const getCurrentMealType = () => {
   return 'Dinner';
 };
 
+// Mock data for exercise progress
+const exerciseProgressData = {
+  labels: ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core'],
+  datasets: [{
+    data: [65, 59, 80, 81, 56, 55], // Progress percentages
+    colors: [
+      (opacity = 1) => `rgba(75, 192, 192, ${opacity})`,
+      (opacity = 1) => `rgba(54, 162, 235, ${opacity})`,
+      (opacity = 1) => `rgba(255, 206, 86, ${opacity})`,
+      (opacity = 1) => `rgba(255, 159, 64, ${opacity})`,
+      (opacity = 1) => `rgba(255, 99, 132, ${opacity})`,
+      (opacity = 1) => `rgba(153, 102, 255, ${opacity})`,
+    ]
+  }]
+};
+
+// Mock data for body measurements
+const bodyMeasurementsData = {
+  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  datasets: [
+    {
+      data: [75, 72, 70, 68, 66, 65],
+      color: (opacity = 1) => `rgba(75, 192, 192, ${opacity})`,
+      strokeWidth: 2
+    },
+    {
+      data: [95, 92, 90, 88, 86, 84],
+      color: (opacity = 1) => `rgba(255, 159, 64, ${opacity})`,
+      strokeWidth: 2
+    },
+    {
+      data: [110, 105, 100, 98, 95, 92],
+      color: (opacity = 1) => `rgba(255, 99, 132, ${opacity})`,
+      strokeWidth: 2
+    }
+  ],
+  legend: ['Chest (in)', 'Waist (in)', 'Hips (in)']
+};
+
+const screenWidth = Dimensions.get('window').width - 40;
+
 const HomeScreen = () => {
   const { user, authToken } = useAuth();
   const [meals, setMeals] = useState([]);
   const [currentMealType, setCurrentMealType] = useState(getCurrentMealType());
   const [isLoading, setIsLoading] = useState(true);
   const [selectedMeal, setSelectedMeal] = useState(null);
+  const [selectedTimeframe, setSelectedTimeframe] = useState('3m'); // 1m, 3m, 6m, 1y
 
   const getMeals = async () => {
    mealAPI.getMeals()
@@ -117,7 +159,129 @@ const HomeScreen = () => {
           </View>
         )}
         
-        {/* Existing workout card */}
+        {/* Exercise Progress Chart */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Exercise Progress</Text>
+          <View style={styles.chartContainer}>
+            <BarChart
+              data={exerciseProgressData}
+              width={screenWidth}
+              height={220}
+              yAxisLabel=""
+              yAxisSuffix="%"
+              yAxisInterval={1}
+              chartConfig={{
+                backgroundColor: '#ffffff',
+                backgroundGradientFrom: '#ffffff',
+                backgroundGradientTo: '#ffffff',
+                decimalPlaces: 0,
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                style: {
+                  borderRadius: 16
+                },
+                propsForLabels: {
+                  fontSize: 10,
+                },
+                barPercentage: 0.6,
+                useShadowColorFromDataset: false,
+                formatYLabel: (value) => `${Math.round(value)}%`,
+              }}
+              style={styles.chart}
+              verticalLabelRotation={0}
+              fromZero
+              showBarTops={false}
+              withInnerLines={false}
+              withOuterLines={true}
+              showValuesOnTopOfBars={true}
+              withCustomBarColorFromData={true}
+              flatColor={true}
+            />
+          </View>
+          <Text style={styles.chartNote}>Weekly progress by muscle group</Text>
+        </View>
+
+        {/* Body Measurements Chart */}
+        <View style={styles.card}>
+          <View style={styles.chartHeader}>
+            <Text style={styles.cardTitle}>Body Measurements</Text>
+            <View style={styles.timeframeSelector}>
+              {['1m', '3m', '6m', '1y'].map((timeframe) => (
+                <TouchableOpacity
+                  key={timeframe}
+                  style={[
+                    styles.timeframeButton,
+                    selectedTimeframe === timeframe && styles.activeTimeframe
+                  ]}
+                  onPress={() => setSelectedTimeframe(timeframe)}
+                >
+                  <Text style={[
+                    styles.timeframeText,
+                    selectedTimeframe === timeframe && styles.activeTimeframeText
+                  ]}>
+                    {timeframe}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+          <View style={styles.chartContainer}>
+            <LineChart
+              data={bodyMeasurementsData}
+              width={screenWidth}
+              height={220}
+              yAxisLabel=""
+              yAxisSuffix=" in"
+              yAxisInterval={1}
+              chartConfig={{
+                backgroundColor: '#ffffff',
+                backgroundGradientFrom: '#ffffff',
+                backgroundGradientTo: '#ffffff',
+                decimalPlaces: 0,
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+                propsForDots: {
+                  r: '4',
+                  strokeWidth: '2',
+                  stroke: '#fff'
+                },
+                propsForLabels: {
+                  fontSize: 10,
+                },
+              }}
+              bezier
+              style={styles.chart}
+              withDots={true}
+              withShadow={false}
+              withInnerLines={true}
+              withOuterLines={true}
+              withVerticalLines={true}
+              withHorizontalLines={true}
+              withVerticalLabels={true}
+              withHorizontalLabels={true}
+              fromZero={false}
+            />
+          </View>
+          <View style={styles.legendContainer}>
+            {bodyMeasurementsData.legend.map((item, index) => (
+              <View key={index} style={styles.legendItem}>
+                <View 
+                  style={[
+                    styles.legendColor, 
+                    { backgroundColor: bodyMeasurementsData.datasets[index].color(1) }
+                  ]} 
+                />
+                <Text style={styles.legendText}>{item}</Text>
+              </View>
+            ))}
+          </View>
+          <Text style={styles.chartNote}>Track your body measurements over time</Text>
+        </View>
+
+        {/* Today's Workout Card */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Today's Workout</Text>
           <Text style={styles.cardText}>No workout planned for today</Text>
@@ -239,6 +403,77 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  chartContainer: {
+    alignItems: 'center',
+    marginVertical: 8,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  chart: {
+    marginVertical: 8,
+    borderRadius: 8,
+  },
+  chartNote: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  chartHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  timeframeSelector: {
+    flexDirection: 'row',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 15,
+    padding: 2,
+  },
+  timeframeButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 13,
+  },
+  activeTimeframe: {
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  timeframeText: {
+    fontSize: 12,
+    color: '#666',
+  },
+  activeTimeframeText: {
+    color: '#333',
+    fontWeight: '600',
+  },
+  legendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    marginTop: 8,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 8,
+    marginVertical: 2,
+  },
+  legendColor: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 4,
+  },
+  legendText: {
+    fontSize: 11,
+    color: '#666',
   },
   cardTitle: {
     fontSize: 18,
