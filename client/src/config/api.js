@@ -16,6 +16,11 @@ export const ENDPOINTS = {
     ME: `${API_BASE_URL}/userDetails/me`,
     UPDATE: `${API_BASE_URL}/userDetails/update`,
   },
+  MEAL:{
+    GET: `${API_BASE_URL}/meal`,
+    UPDATE: `${API_BASE_URL}/meal/update`,
+    DELETE: `${API_BASE_URL}/meal/delete`,
+  }
 };
 
 export default {

@@ -159,4 +159,24 @@ export const workoutAPI = {
   },
 };
 
+// Meal API calls
+export const mealAPI = {
+  getMeals: async () => {
+    try {
+      const response = await api.get(ENDPOINTS.MEAL.GET);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+  updateMeal: async (mealData) => {
+    try {
+      const response = await api.put(`${ENDPOINTS.MEAL.BASE}/${mealData.id}`, mealData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+};
+
 export default api;
