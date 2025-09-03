@@ -8,7 +8,6 @@ const MuscleHistory = ({ exercise }) => {
     { ...exercise.stats?.[0]?.duration ? { title: 'Duration (min)' } : { title: 'Weight x Reps' } },
   ];
 
-  console.log({ exercise }, "history")
 
 
 

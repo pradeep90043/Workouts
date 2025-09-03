@@ -17,7 +17,6 @@ export default function ExerciseDetailsScreen() {
     ?.find((group) => group.name === params.muscle)
     ?.exercises
     ?.find((ex) => ex.name === params.exercise);
-  console.log({ exercise })
   const [exerciseData, setExerciseData] = useState(() => {
     // Use the exercise data from context if available, otherwise use defaults
     
@@ -107,7 +106,6 @@ export default function ExerciseDetailsScreen() {
         notes: ""
       };
 
-      console.log('Sending workout data:', JSON.stringify(exerciseDataToSend, null, 2));
 
       const result = await updateWorkout(exerciseDataToSend);
 

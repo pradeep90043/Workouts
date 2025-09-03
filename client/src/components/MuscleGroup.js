@@ -5,7 +5,6 @@ import { useLocalSearchParams } from "expo-router";
 import { getExerciseImage } from "../utils/exerciseImages";
 import { renderViewMode } from "./ViewDetails";
 const MuscleGroup = ({ exercises }) => {
-console.log({ exercises})
   const defaultJSx = () => (
     <View style={styles.container}>
       {exercises?.map((exercise, index) => (

@@ -14,14 +14,12 @@ const sendErrorResponse = (res, statusCode, message, errorCode = '') => {
 // @route   POST /api/v1/auth/register
 // @access  Public
 exports.register = async (req, res, next) => {
-    console.log('Register request body:', req.body);
     
     try {
         const { username, email, password } = req.body;
 
         // Validate required fields
         if (!username || !email || !password) {
-            console.log('Missing required fields', username, email, password);
             return sendErrorResponse(res, 400, 'Please provide all required fields');
         }
 
@@ -29,7 +27,6 @@ exports.register = async (req, res, next) => {
         try {
             const existingUser = await User.findOne({ email });
             if (existingUser) {
-                console.log('Registration attempt with existing email:', email);
                 return sendErrorResponse(res, 400, 'Email already exists', 'DUPLICATE_EMAIL');
             }
         } catch (dbError) {
@@ -45,7 +42,6 @@ exports.register = async (req, res, next) => {
                 email,
                 password
             });
-            console.log('User created successfully:', { id: user._id, email: user.email });
         } catch (createError) {
             console.error('Error creating user:', {
                 name: createError.name,
@@ -74,7 +70,6 @@ exports.register = async (req, res, next) => {
         try {
             // Use username instead of _id to match the workout routes
             await seedExercisesForNewUser(user.username);
-            console.log(`Successfully seeded exercises for user: ${user.username}`);
         } catch (seedError) {
             console.error('Error seeding exercises for new user:', seedError);
             // Don't fail registration if seeding fails
@@ -171,7 +166,6 @@ const sendToken = (user, statusCode, res) => {
             email: user.email
         };
 
-        console.log('Sending token response for user:', userData.email);
         
         return res
             .status(statusCode)

@@ -32,7 +32,6 @@ export default function ExerciseDetailsScreen() {
  
 
  
-console.log(workouts)
   return (
     <ScrollView>
       <View style={styles.container}>

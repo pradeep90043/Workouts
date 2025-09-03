@@ -9,8 +9,7 @@ router.use(protect);
 router.get('/me', async (req, res) => {
     try {
         const userId = req.user.id;
-        const details = await Detail.findOne({ userId });
-        console.log('Fetched user details:', details, userId);
+        const details = await Detail.find({ userId });
 
         if (!details) {
             return res.status(404).json({ message: 'User details not found' });
@@ -44,7 +43,7 @@ router.put('/update', async (req, res) => {
             gender,
             goal,
             activityLevel,
-            updatedAt: new Date()
+            updatedAt: new Date().getTime()
         };
 
         const options = { 
@@ -54,7 +53,7 @@ router.put('/update', async (req, res) => {
         };
 
         const details = await Detail.findOneAndUpdate(
-            { userId },
+            { userId, updatedAt: new Date().getTime() },
             updateData,
             options
         );

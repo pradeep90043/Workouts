@@ -14,7 +14,6 @@ router.use(protect);
  */
 // server/routes/workoutRoutes.js
 router.get('/summary', async (req, res, next) => {
-    console.log('Summary request - User ID:', req.user.id, 'Username:', req.user.username);
     
     try {
       const workouts = await Workout.find({
@@ -116,7 +115,6 @@ router.post('/', async (req, res, next) => {
             await newWorkout.save();
             workouts = [newWorkout];
         }
-        console.log({ workouts })
 
         // For now, we'll work with the first workout
         // In a real app, you might want to create a new workout per session or per day
@@ -259,10 +257,7 @@ router.put('/:exerciseId', async (req, res, next) => {
         // Save the updated workout
         const savedWorkout = await workout.save();
 
-        console.log('Exercise updated successfully:', {
-            workoutId: savedWorkout._id,
-            exerciseName: exercise.name
-        });
+     
 
         return res.status(200).json({
             status: 'success',

@@ -24,7 +24,6 @@ export const UserDetailsProvider = ({ children }) => {
     
     try {
       const token = await getAuthToken();
-      console.log('Fetch user details token:', token);
       if (!token) {
         throw new Error('No authentication token found');
       }

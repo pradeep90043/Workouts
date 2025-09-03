@@ -35,7 +35,6 @@ export const WorkoutProvider = ({ children }) => {
           'Content-Type': 'application/json',
         },
       });
-console.log('Fetch workouts response:', response);
       if (response.status === 401) {
         // Handle unauthorized (token might be expired)
         throw new Error('Session expired. Please log in again.');
@@ -46,7 +45,6 @@ console.log('Fetch workouts response:', response);
       }
       
       const result = await response.json();
-      console.log('Fetched workouts:', result);
       
       // Update based on your actual API response structure
       setWorkouts(result?.muscleGroups || result);

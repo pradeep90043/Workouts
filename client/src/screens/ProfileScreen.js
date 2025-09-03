@@ -8,7 +8,7 @@ import UpdateDetails from '../components/UpdateDetails';
 
 const ProfileScreen = () => {
   const { user, logout } = useAuth();
-  const { userDetails, loading, error, fetchUserDetails, updateUserDetails } = useUserDetails();
+  const { userDetails:allUserDetails, loading, error, fetchUserDetails, updateUserDetails } = useUserDetails();
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
     weight: "",
@@ -24,6 +24,7 @@ const ProfileScreen = () => {
     activityLevel: "",
 
   });
+  const userDetails = allUserDetails[allUserDetails.length - 1];
 
   useEffect(() => {
     if (userDetails) {

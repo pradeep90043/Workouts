@@ -6,11 +6,9 @@ const {protect} = require("../middleware/auth")
 router.use(protect)
 
 router.get("/", async (req,res)=>{
-    console.log("Meal request - User ID:", req.user.id, "Username:", req.user.username);
     try {
         const userId = req.user.id;
         const meal = await Meal.find({userId})
-        console.log("Fetched meal:", meal);
         res.json(meal)
     } catch (error) {
         console.error("Error fetching meal:", error)
