@@ -16,41 +16,89 @@ router.use(protect);
 router.get('/summary', async (req, res, next) => {
     
     try {
-      const workouts = await Workout.find({
-        userId: req.user.username
-      });
-  
-      // Flatten exercises by muscle group
-      const muscleGroupMap = {};
-  
-      workouts.forEach(workout => {
-        const { _id, name, muscleGroup, stats } = workout;
-  
-        if (!muscleGroupMap[muscleGroup]) {
-          muscleGroupMap[muscleGroup] = [];
+      const result = await Workout.aggregate([{
+        $match: { userId: req.user.username }
+      }, {
+        $unwind: '$stats'
+      }, {
+        $unwind: '$stats.sets'
+      }, {
+        $addFields: {
+          'stats.sets.volume': {
+            $multiply: [
+              '$stats.sets.reps',
+              '$stats.sets.weight'
+            ]
+          }
         }
-  
-        muscleGroupMap[muscleGroup].push({
-          id: _id, // exercise document id
-          name,
-          muscleGroup,
-          stats
+      }, 
+    //   {
+    //     $group: {
+    //       _id: '$_id',
+    //       name: { $first: '$name' },
+    //       muscleGroup: { $first: '$muscleGroup' },
+    //       stats: { $push: '$stats' },
+    //       exerciseVolume: { $sum: '$stats.sets.volume' }
+    //     }
+    //   }, {
+    //     $group: {
+    //       _id: '$muscleGroup',
+    //       exercises: {
+    //         $push: {
+    //           id: '$_id',
+    //           name: '$name',
+    //           muscleGroup: '$muscleGroup',
+    //           stats: '$stats',
+    //           volume: '$exerciseVolume'
+    //         }
+    //       },
+    //       totalVolume: { $sum: '$exerciseVolume' }
+    //     }
+    //   }, 
+    //   {
+    //     $project: {
+    //       _id: 0,
+    //       name: '$_id',
+    //       exercises: 1,
+    //       totalVolume: 1
+    //     }
+    //   }
+    ]);
+res.status(200).json({
+    status: 'success',
+    data: result,
+    statusCode: 200
+});
+      // Calculate exercise volumes across all muscle groups
+      const exerciseVolumes = [];
+      const exerciseMap = new Map();
+      
+      result.forEach(muscleGroup => {
+        muscleGroup.exercises.forEach(exercise => {
+          if (exerciseMap.has(exercise.name)) {
+            exerciseMap.set(exercise.name, exerciseMap.get(exercise.name) + exercise.volume);
+          } else {
+            exerciseMap.set(exercise.name, exercise.volume);
+          }
         });
       });
-  
-      // Convert to array format
-      const muscleGroups = Object.entries(muscleGroupMap).map(
-        ([name, exercises]) => ({
-          name,
-          exercises
-        })
-      );
-  
-      res.status(200).json({
-        status: 'success',
-        statusCode: 200,
-        muscleGroups
+
+      exerciseMap.forEach((volume, name) => {
+        exerciseVolumes.push({ name, volume });
       });
+
+    //   res.status(200).json({
+    //     status: 'success',
+    //     data: {
+    //       muscleGroups: result,
+    //       exerciseVolumes,
+    //       muscleVolumes: result.map(({ name, totalVolume }) => ({
+    //         name,
+    //         volume: totalVolume
+    //       }))
+    //     },
+    //     statusCode: 200
+    //   });
     } catch (error) {
       console.error('Error in /summary:', error);
       res.status(500).json({

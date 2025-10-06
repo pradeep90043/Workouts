@@ -314,7 +314,7 @@ const HomeScreen = () => {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Exercise Progress</Text>
           <View style={styles.chartContainer}>
-            <View style={styles.filters}>
+            {/* <View style={styles.filters}>
               <Text style={styles.filterText}>Filter by muscle group</Text>
               <View style={styles.filterButtons}>
                 {[...muscleLabels(), 'All']?.map((muscle, index) => (
@@ -333,7 +333,7 @@ const HomeScreen = () => {
                   </TouchableOpacity>
                 ))}
               </View>
-            </View>
+            </View> */}
             <BarChart
               data={exerciseProgressData}
               width={screenWidth}
@@ -697,16 +697,15 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   mealtab: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 16,
+    border:"1px solid #ddd",
     borderRadius: "50%",
 
   },
   mealTabTitle: {
     fontSize: 16,
     fontWeight: '600',
+    textAlign: 'center',
     color: '#333',
   },
   mealCardFooter: {
